@@ -1,0 +1,8 @@
+node_modules
+# Origen ZIP Figma (opcional); la ingesta copia a public/flags/
+public/flags-temp/
+public/flags/
+
+node_modules
+dist
+

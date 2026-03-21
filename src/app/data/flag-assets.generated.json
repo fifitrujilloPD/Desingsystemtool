@@ -1,0 +1,1520 @@
+[
+  {
+    "slug": "afghanistan",
+    "figmaName": "Afghanistan",
+    "iso2": "af",
+    "special": false
+  },
+  {
+    "slug": "aland-islands",
+    "figmaName": "Åland Islands",
+    "iso2": "ax",
+    "special": false
+  },
+  {
+    "slug": "albania",
+    "figmaName": "Albania",
+    "iso2": "al",
+    "special": false
+  },
+  {
+    "slug": "algeria",
+    "figmaName": "Algeria",
+    "iso2": "dz",
+    "special": false
+  },
+  {
+    "slug": "american-samoa",
+    "figmaName": "American Samoa",
+    "iso2": "as",
+    "special": false
+  },
+  {
+    "slug": "andorra",
+    "figmaName": "Andorra",
+    "iso2": "ad",
+    "special": false
+  },
+  {
+    "slug": "angola",
+    "figmaName": "Angola",
+    "iso2": "ao",
+    "special": false
+  },
+  {
+    "slug": "anguilla",
+    "figmaName": "Anguilla",
+    "iso2": "ai",
+    "special": false
+  },
+  {
+    "slug": "antarctica",
+    "figmaName": "Antarctica",
+    "iso2": "aq",
+    "special": false
+  },
+  {
+    "slug": "antigua-and-barbuda",
+    "figmaName": "Antigua and Barbuda",
+    "iso2": "ag",
+    "special": false
+  },
+  {
+    "slug": "argentina",
+    "figmaName": "Argentina",
+    "iso2": "ar",
+    "special": false
+  },
+  {
+    "slug": "armenia",
+    "figmaName": "Armenia",
+    "iso2": "am",
+    "special": false
+  },
+  {
+    "slug": "aruba",
+    "figmaName": "Aruba",
+    "iso2": "aw",
+    "special": false
+  },
+  {
+    "slug": "australia",
+    "figmaName": "Australia",
+    "iso2": "au",
+    "special": false
+  },
+  {
+    "slug": "austria",
+    "figmaName": "Austria",
+    "iso2": "at",
+    "special": false
+  },
+  {
+    "slug": "azerbaijan",
+    "figmaName": "Azerbaijan",
+    "iso2": "az",
+    "special": false
+  },
+  {
+    "slug": "bahamas",
+    "figmaName": "Bahamas",
+    "iso2": "bs",
+    "special": false
+  },
+  {
+    "slug": "bahrain",
+    "figmaName": "Bahrain",
+    "iso2": "bh",
+    "special": false
+  },
+  {
+    "slug": "bangladesh",
+    "figmaName": "Bangladesh",
+    "iso2": "bd",
+    "special": false
+  },
+  {
+    "slug": "barbados",
+    "figmaName": "Barbados",
+    "iso2": "bb",
+    "special": false
+  },
+  {
+    "slug": "belarus",
+    "figmaName": "Belarus",
+    "iso2": "by",
+    "special": false
+  },
+  {
+    "slug": "belgium",
+    "figmaName": "Belgium",
+    "iso2": "be",
+    "special": false
+  },
+  {
+    "slug": "belize",
+    "figmaName": "Belize",
+    "iso2": "bz",
+    "special": false
+  },
+  {
+    "slug": "benin",
+    "figmaName": "Benin",
+    "iso2": "bj",
+    "special": false
+  },
+  {
+    "slug": "bermuda",
+    "figmaName": "Bermuda",
+    "iso2": "bm",
+    "special": false
+  },
+  {
+    "slug": "bhutan",
+    "figmaName": "Bhutan",
+    "iso2": "bt",
+    "special": false
+  },
+  {
+    "slug": "bolivia-plurinational-state-of",
+    "figmaName": "Bolivia (Plurinational State of)",
+    "iso2": "bo",
+    "special": false
+  },
+  {
+    "slug": "bonaire",
+    "figmaName": "Bonaire",
+    "iso2": "bq",
+    "special": true
+  },
+  {
+    "slug": "bosnia-and-herzegovina",
+    "figmaName": "Bosnia and Herzegovina",
+    "iso2": "ba",
+    "special": false
+  },
+  {
+    "slug": "botswana",
+    "figmaName": "Botswana",
+    "iso2": "bw",
+    "special": false
+  },
+  {
+    "slug": "brazil",
+    "figmaName": "Brazil",
+    "iso2": "br",
+    "special": false
+  },
+  {
+    "slug": "british-indian-ocean-territory",
+    "figmaName": "British Indian Ocean Territory",
+    "iso2": "io",
+    "special": false
+  },
+  {
+    "slug": "brunei-darussalam",
+    "figmaName": "Brunei Darussalam",
+    "iso2": "bn",
+    "special": false
+  },
+  {
+    "slug": "bulgaria",
+    "figmaName": "Bulgaria",
+    "iso2": "bg",
+    "special": false
+  },
+  {
+    "slug": "burkina-faso",
+    "figmaName": "Burkina Faso",
+    "iso2": "bf",
+    "special": false
+  },
+  {
+    "slug": "burundi",
+    "figmaName": "Burundi",
+    "iso2": "bi",
+    "special": false
+  },
+  {
+    "slug": "cabo-verde",
+    "figmaName": "Cabo Verde",
+    "iso2": "cv",
+    "special": false
+  },
+  {
+    "slug": "cambodia",
+    "figmaName": "Cambodia",
+    "iso2": "kh",
+    "special": false
+  },
+  {
+    "slug": "cameroon",
+    "figmaName": "Cameroon",
+    "iso2": "cm",
+    "special": false
+  },
+  {
+    "slug": "canada",
+    "figmaName": "Canada",
+    "iso2": "ca",
+    "special": false
+  },
+  {
+    "slug": "cayman-islands",
+    "figmaName": "Cayman Islands",
+    "iso2": "ky",
+    "special": false
+  },
+  {
+    "slug": "central-african-republic",
+    "figmaName": "Central African Republic",
+    "iso2": "cf",
+    "special": false
+  },
+  {
+    "slug": "chad",
+    "figmaName": "Chad",
+    "iso2": "td",
+    "special": false
+  },
+  {
+    "slug": "chile",
+    "figmaName": "Chile",
+    "iso2": "cl",
+    "special": false
+  },
+  {
+    "slug": "china",
+    "figmaName": "China",
+    "iso2": "cn",
+    "special": false
+  },
+  {
+    "slug": "christmas-island",
+    "figmaName": "Christmas Island",
+    "iso2": "cx",
+    "special": false
+  },
+  {
+    "slug": "cocos-keeling-islands",
+    "figmaName": "Cocos (Keeling) Islands",
+    "iso2": "cc",
+    "special": false
+  },
+  {
+    "slug": "colombia",
+    "figmaName": "Colombia",
+    "iso2": "co",
+    "special": false
+  },
+  {
+    "slug": "comoros",
+    "figmaName": "Comoros",
+    "iso2": "km",
+    "special": false
+  },
+  {
+    "slug": "congo",
+    "figmaName": "Congo",
+    "iso2": "cg",
+    "special": false
+  },
+  {
+    "slug": "congo-democratic-repulic",
+    "figmaName": "Congo (Democratic Repulic)",
+    "iso2": "cd",
+    "special": false
+  },
+  {
+    "slug": "cook-islands",
+    "figmaName": "Cook Islands",
+    "iso2": "ck",
+    "special": false
+  },
+  {
+    "slug": "costa-rica",
+    "figmaName": "Costa Rica",
+    "iso2": "cr",
+    "special": false
+  },
+  {
+    "slug": "cote-d-ivoire",
+    "figmaName": "Côte d'Ivoire",
+    "iso2": "ci",
+    "special": false
+  },
+  {
+    "slug": "croatia",
+    "figmaName": "Croatia",
+    "iso2": "hr",
+    "special": false
+  },
+  {
+    "slug": "cuba",
+    "figmaName": "Cuba",
+    "iso2": "cu",
+    "special": false
+  },
+  {
+    "slug": "curacao",
+    "figmaName": "Curaçao",
+    "iso2": "cw",
+    "special": false
+  },
+  {
+    "slug": "cyprus",
+    "figmaName": "Cyprus",
+    "iso2": "cy",
+    "special": false
+  },
+  {
+    "slug": "czechia",
+    "figmaName": "Czechia",
+    "iso2": "cz",
+    "special": false
+  },
+  {
+    "slug": "denmark",
+    "figmaName": "Denmark",
+    "iso2": "dk",
+    "special": false
+  },
+  {
+    "slug": "djibouti",
+    "figmaName": "Djibouti",
+    "iso2": "dj",
+    "special": false
+  },
+  {
+    "slug": "dominica",
+    "figmaName": "Dominica",
+    "iso2": "dm",
+    "special": false
+  },
+  {
+    "slug": "dominican-republic",
+    "figmaName": "Dominican Republic",
+    "iso2": "do",
+    "special": false
+  },
+  {
+    "slug": "easter-island",
+    "figmaName": "Easter Island",
+    "iso2": "cl",
+    "special": true
+  },
+  {
+    "slug": "ecuador",
+    "figmaName": "Ecuador",
+    "iso2": "ec",
+    "special": false
+  },
+  {
+    "slug": "egypt",
+    "figmaName": "Egypt",
+    "iso2": "eg",
+    "special": false
+  },
+  {
+    "slug": "el-salvador",
+    "figmaName": "El Salvador",
+    "iso2": "sv",
+    "special": false
+  },
+  {
+    "slug": "equatorial-guinea",
+    "figmaName": "Equatorial Guinea",
+    "iso2": "gq",
+    "special": false
+  },
+  {
+    "slug": "eritrea",
+    "figmaName": "Eritrea",
+    "iso2": "er",
+    "special": false
+  },
+  {
+    "slug": "estonia",
+    "figmaName": "Estonia",
+    "iso2": "ee",
+    "special": false
+  },
+  {
+    "slug": "eswatini",
+    "figmaName": "Eswatini",
+    "iso2": "sz",
+    "special": false
+  },
+  {
+    "slug": "ethiopia",
+    "figmaName": "Ethiopia",
+    "iso2": "et",
+    "special": false
+  },
+  {
+    "slug": "european-union",
+    "figmaName": "European Union",
+    "iso2": "eu",
+    "special": true
+  },
+  {
+    "slug": "falkland-islands-malvinas",
+    "figmaName": "Falkland Islands (Malvinas)",
+    "iso2": "fk",
+    "special": false
+  },
+  {
+    "slug": "faroe-islands",
+    "figmaName": "Faroe Islands",
+    "iso2": "fo",
+    "special": false
+  },
+  {
+    "slug": "fiji",
+    "figmaName": "Fiji",
+    "iso2": "fj",
+    "special": false
+  },
+  {
+    "slug": "finland",
+    "figmaName": "Finland",
+    "iso2": "fi",
+    "special": false
+  },
+  {
+    "slug": "france",
+    "figmaName": "France",
+    "iso2": "fr",
+    "special": false
+  },
+  {
+    "slug": "french-guiana",
+    "figmaName": "French Guiana",
+    "iso2": "gf",
+    "special": false
+  },
+  {
+    "slug": "french-polynesia",
+    "figmaName": "French Polynesia",
+    "iso2": "pf",
+    "special": false
+  },
+  {
+    "slug": "french-southern-territories",
+    "figmaName": "French Southern Territories",
+    "iso2": "tf",
+    "special": false
+  },
+  {
+    "slug": "gabon",
+    "figmaName": "Gabon",
+    "iso2": "ga",
+    "special": false
+  },
+  {
+    "slug": "gambia",
+    "figmaName": "Gambia",
+    "iso2": "gm",
+    "special": false
+  },
+  {
+    "slug": "georgia",
+    "figmaName": "Georgia",
+    "iso2": "ge",
+    "special": false
+  },
+  {
+    "slug": "germany",
+    "figmaName": "Germany",
+    "iso2": "de",
+    "special": false
+  },
+  {
+    "slug": "ghana",
+    "figmaName": "Ghana",
+    "iso2": "gh",
+    "special": false
+  },
+  {
+    "slug": "gibraltar",
+    "figmaName": "Gibraltar",
+    "iso2": "gi",
+    "special": false
+  },
+  {
+    "slug": "greece",
+    "figmaName": "Greece",
+    "iso2": "gr",
+    "special": false
+  },
+  {
+    "slug": "greenland",
+    "figmaName": "Greenland",
+    "iso2": "gl",
+    "special": false
+  },
+  {
+    "slug": "grenada",
+    "figmaName": "Grenada",
+    "iso2": "gd",
+    "special": false
+  },
+  {
+    "slug": "guadeloupe",
+    "figmaName": "Guadeloupe",
+    "iso2": "gp",
+    "special": false
+  },
+  {
+    "slug": "guam",
+    "figmaName": "Guam",
+    "iso2": "gu",
+    "special": false
+  },
+  {
+    "slug": "guatemala",
+    "figmaName": "Guatemala",
+    "iso2": "gt",
+    "special": false
+  },
+  {
+    "slug": "guernsey",
+    "figmaName": "Guernsey",
+    "iso2": "gg",
+    "special": false
+  },
+  {
+    "slug": "guinea",
+    "figmaName": "Guinea",
+    "iso2": "gn",
+    "special": false
+  },
+  {
+    "slug": "guinea-bissau",
+    "figmaName": "Guinea-Bissau",
+    "iso2": "gw",
+    "special": false
+  },
+  {
+    "slug": "guyana",
+    "figmaName": "Guyana",
+    "iso2": "gy",
+    "special": false
+  },
+  {
+    "slug": "haiti",
+    "figmaName": "Haiti",
+    "iso2": "ht",
+    "special": false
+  },
+  {
+    "slug": "holy-see",
+    "figmaName": "Holy See",
+    "iso2": "va",
+    "special": false
+  },
+  {
+    "slug": "honduras",
+    "figmaName": "Honduras",
+    "iso2": "hn",
+    "special": false
+  },
+  {
+    "slug": "hong-kong",
+    "figmaName": "Hong Kong",
+    "iso2": "hk",
+    "special": false
+  },
+  {
+    "slug": "hungary",
+    "figmaName": "Hungary",
+    "iso2": "hu",
+    "special": false
+  },
+  {
+    "slug": "iceland",
+    "figmaName": "Iceland",
+    "iso2": "is",
+    "special": false
+  },
+  {
+    "slug": "india",
+    "figmaName": "India",
+    "iso2": "in",
+    "special": false
+  },
+  {
+    "slug": "indonesia",
+    "figmaName": "Indonesia",
+    "iso2": "id",
+    "special": false
+  },
+  {
+    "slug": "iran-islamic-republic-of",
+    "figmaName": "Iran (Islamic Republic of)",
+    "iso2": "ir",
+    "special": false
+  },
+  {
+    "slug": "iraq",
+    "figmaName": "Iraq",
+    "iso2": "iq",
+    "special": false
+  },
+  {
+    "slug": "ireland",
+    "figmaName": "Ireland",
+    "iso2": "ie",
+    "special": false
+  },
+  {
+    "slug": "isle-of-man",
+    "figmaName": "Isle of Man",
+    "iso2": "im",
+    "special": false
+  },
+  {
+    "slug": "israel",
+    "figmaName": "Israel",
+    "iso2": "il",
+    "special": false
+  },
+  {
+    "slug": "italy",
+    "figmaName": "Italy",
+    "iso2": "it",
+    "special": false
+  },
+  {
+    "slug": "jamaica",
+    "figmaName": "Jamaica",
+    "iso2": "jm",
+    "special": false
+  },
+  {
+    "slug": "japan",
+    "figmaName": "Japan",
+    "iso2": "jp",
+    "special": false
+  },
+  {
+    "slug": "jersey",
+    "figmaName": "Jersey",
+    "iso2": "je",
+    "special": false
+  },
+  {
+    "slug": "jordan",
+    "figmaName": "Jordan",
+    "iso2": "jo",
+    "special": false
+  },
+  {
+    "slug": "kazakhstan",
+    "figmaName": "Kazakhstan",
+    "iso2": "kz",
+    "special": false
+  },
+  {
+    "slug": "kenya",
+    "figmaName": "Kenya",
+    "iso2": "ke",
+    "special": false
+  },
+  {
+    "slug": "kiribati",
+    "figmaName": "Kiribati",
+    "iso2": "ki",
+    "special": false
+  },
+  {
+    "slug": "korea-north",
+    "figmaName": "Korea (North)",
+    "iso2": "kp",
+    "special": false
+  },
+  {
+    "slug": "korea-south",
+    "figmaName": "Korea (South)",
+    "iso2": "kr",
+    "special": false
+  },
+  {
+    "slug": "kosovo",
+    "figmaName": "Kosovo",
+    "iso2": "xk",
+    "special": false
+  },
+  {
+    "slug": "kuwait",
+    "figmaName": "Kuwait",
+    "iso2": "kw",
+    "special": false
+  },
+  {
+    "slug": "kyrgyzstan",
+    "figmaName": "Kyrgyzstan",
+    "iso2": "kg",
+    "special": false
+  },
+  {
+    "slug": "lao-people-s-democratic-republic",
+    "figmaName": "Lao People's Democratic Republic",
+    "iso2": "la",
+    "special": false
+  },
+  {
+    "slug": "latvia",
+    "figmaName": "Latvia",
+    "iso2": "lv",
+    "special": false
+  },
+  {
+    "slug": "lebanon",
+    "figmaName": "Lebanon",
+    "iso2": "lb",
+    "special": false
+  },
+  {
+    "slug": "lesotho",
+    "figmaName": "Lesotho",
+    "iso2": "ls",
+    "special": false
+  },
+  {
+    "slug": "liberia",
+    "figmaName": "Liberia",
+    "iso2": "lr",
+    "special": false
+  },
+  {
+    "slug": "libya",
+    "figmaName": "Libya",
+    "iso2": "ly",
+    "special": false
+  },
+  {
+    "slug": "liechtenstein",
+    "figmaName": "Liechtenstein",
+    "iso2": "li",
+    "special": false
+  },
+  {
+    "slug": "lithuania",
+    "figmaName": "Lithuania",
+    "iso2": "lt",
+    "special": false
+  },
+  {
+    "slug": "luxembourg",
+    "figmaName": "Luxembourg",
+    "iso2": "lu",
+    "special": false
+  },
+  {
+    "slug": "macao",
+    "figmaName": "Macao",
+    "iso2": "mo",
+    "special": false
+  },
+  {
+    "slug": "madagascar",
+    "figmaName": "Madagascar",
+    "iso2": "mg",
+    "special": false
+  },
+  {
+    "slug": "malawi",
+    "figmaName": "Malawi",
+    "iso2": "mw",
+    "special": false
+  },
+  {
+    "slug": "malaysia",
+    "figmaName": "Malaysia",
+    "iso2": "my",
+    "special": false
+  },
+  {
+    "slug": "maldives",
+    "figmaName": "Maldives",
+    "iso2": "mv",
+    "special": false
+  },
+  {
+    "slug": "mali",
+    "figmaName": "Mali",
+    "iso2": "ml",
+    "special": false
+  },
+  {
+    "slug": "malta",
+    "figmaName": "Malta",
+    "iso2": "mt",
+    "special": false
+  },
+  {
+    "slug": "marshall-islands",
+    "figmaName": "Marshall Islands",
+    "iso2": "mh",
+    "special": false
+  },
+  {
+    "slug": "martinique",
+    "figmaName": "Martinique",
+    "iso2": "mq",
+    "special": false
+  },
+  {
+    "slug": "mauritania",
+    "figmaName": "Mauritania",
+    "iso2": "mr",
+    "special": false
+  },
+  {
+    "slug": "mauritius",
+    "figmaName": "Mauritius",
+    "iso2": "mu",
+    "special": false
+  },
+  {
+    "slug": "mayotte",
+    "figmaName": "Mayotte",
+    "iso2": "yt",
+    "special": false
+  },
+  {
+    "slug": "mexico",
+    "figmaName": "Mexico",
+    "iso2": "mx",
+    "special": false
+  },
+  {
+    "slug": "micronesia-federated-states-of",
+    "figmaName": "Micronesia (Federated States of)",
+    "iso2": "fm",
+    "special": false
+  },
+  {
+    "slug": "moldova",
+    "figmaName": "Moldova",
+    "iso2": "md",
+    "special": false
+  },
+  {
+    "slug": "monaco",
+    "figmaName": "Monaco",
+    "iso2": "mc",
+    "special": false
+  },
+  {
+    "slug": "mongolia",
+    "figmaName": "Mongolia",
+    "iso2": "mn",
+    "special": false
+  },
+  {
+    "slug": "montenegro",
+    "figmaName": "Montenegro",
+    "iso2": "me",
+    "special": false
+  },
+  {
+    "slug": "montserrat",
+    "figmaName": "Montserrat",
+    "iso2": "ms",
+    "special": false
+  },
+  {
+    "slug": "morocco",
+    "figmaName": "Morocco",
+    "iso2": "ma",
+    "special": false
+  },
+  {
+    "slug": "mozambique",
+    "figmaName": "Mozambique",
+    "iso2": "mz",
+    "special": false
+  },
+  {
+    "slug": "myanmar",
+    "figmaName": "Myanmar",
+    "iso2": "mm",
+    "special": false
+  },
+  {
+    "slug": "namibia",
+    "figmaName": "Namibia",
+    "iso2": "na",
+    "special": false
+  },
+  {
+    "slug": "nato",
+    "figmaName": "Nato",
+    "iso2": "nato",
+    "special": true
+  },
+  {
+    "slug": "nauru",
+    "figmaName": "Nauru",
+    "iso2": "nr",
+    "special": false
+  },
+  {
+    "slug": "nepal",
+    "figmaName": "Nepal",
+    "iso2": "np",
+    "special": false
+  },
+  {
+    "slug": "netherlands",
+    "figmaName": "Netherlands",
+    "iso2": "nl",
+    "special": false
+  },
+  {
+    "slug": "new-caledonia",
+    "figmaName": "New Caledonia",
+    "iso2": "nc",
+    "special": false
+  },
+  {
+    "slug": "new-zealand",
+    "figmaName": "New Zealand",
+    "iso2": "nz",
+    "special": false
+  },
+  {
+    "slug": "nicaragua",
+    "figmaName": "Nicaragua",
+    "iso2": "ni",
+    "special": false
+  },
+  {
+    "slug": "niger",
+    "figmaName": "Niger",
+    "iso2": "ne",
+    "special": false
+  },
+  {
+    "slug": "nigeria",
+    "figmaName": "Nigeria",
+    "iso2": "ng",
+    "special": false
+  },
+  {
+    "slug": "niue",
+    "figmaName": "Niue",
+    "iso2": "nu",
+    "special": false
+  },
+  {
+    "slug": "norfolk-island",
+    "figmaName": "Norfolk Island",
+    "iso2": "nf",
+    "special": false
+  },
+  {
+    "slug": "north-macedonia",
+    "figmaName": "North Macedonia",
+    "iso2": "mk",
+    "special": false
+  },
+  {
+    "slug": "northern-cyprus",
+    "figmaName": "Northern Cyprus",
+    "iso2": "xc",
+    "special": true
+  },
+  {
+    "slug": "northern-mariana-islands",
+    "figmaName": "Northern Mariana Islands",
+    "iso2": "mp",
+    "special": false
+  },
+  {
+    "slug": "norway",
+    "figmaName": "Norway",
+    "iso2": "no",
+    "special": false
+  },
+  {
+    "slug": "oman",
+    "figmaName": "Oman",
+    "iso2": "om",
+    "special": false
+  },
+  {
+    "slug": "pakistan",
+    "figmaName": "Pakistan",
+    "iso2": "pk",
+    "special": false
+  },
+  {
+    "slug": "palau",
+    "figmaName": "Palau",
+    "iso2": "pw",
+    "special": false
+  },
+  {
+    "slug": "palestin",
+    "figmaName": "Palestin",
+    "iso2": "ps",
+    "special": false
+  },
+  {
+    "slug": "panama",
+    "figmaName": "Panama",
+    "iso2": "pa",
+    "special": false
+  },
+  {
+    "slug": "papua-new-guinea",
+    "figmaName": "Papua New Guinea",
+    "iso2": "pg",
+    "special": false
+  },
+  {
+    "slug": "paraguay",
+    "figmaName": "Paraguay",
+    "iso2": "py",
+    "special": false
+  },
+  {
+    "slug": "peru",
+    "figmaName": "Peru",
+    "iso2": "pe",
+    "special": false
+  },
+  {
+    "slug": "philippines",
+    "figmaName": "Philippines",
+    "iso2": "ph",
+    "special": false
+  },
+  {
+    "slug": "pitcairn",
+    "figmaName": "Pitcairn",
+    "iso2": "pn",
+    "special": false
+  },
+  {
+    "slug": "poland",
+    "figmaName": "Poland",
+    "iso2": "pl",
+    "special": false
+  },
+  {
+    "slug": "portugal",
+    "figmaName": "Portugal",
+    "iso2": "pt",
+    "special": false
+  },
+  {
+    "slug": "puerto-rico",
+    "figmaName": "Puerto Rico",
+    "iso2": "pr",
+    "special": false
+  },
+  {
+    "slug": "qatar",
+    "figmaName": "Qatar",
+    "iso2": "qa",
+    "special": false
+  },
+  {
+    "slug": "reunion",
+    "figmaName": "Réunion",
+    "iso2": "re",
+    "special": false
+  },
+  {
+    "slug": "romania",
+    "figmaName": "Romania",
+    "iso2": "ro",
+    "special": false
+  },
+  {
+    "slug": "russian-federation",
+    "figmaName": "Russian Federation",
+    "iso2": "ru",
+    "special": false
+  },
+  {
+    "slug": "rwanda",
+    "figmaName": "Rwanda",
+    "iso2": "rw",
+    "special": false
+  },
+  {
+    "slug": "saint-barthelemy",
+    "figmaName": "Saint Barthélemy",
+    "iso2": "bl",
+    "special": false
+  },
+  {
+    "slug": "saint-kitts-and-nevis",
+    "figmaName": "Saint Kitts and Nevis",
+    "iso2": "kn",
+    "special": false
+  },
+  {
+    "slug": "saint-lucia",
+    "figmaName": "Saint Lucia",
+    "iso2": "lc",
+    "special": false
+  },
+  {
+    "slug": "saint-martin-french-part",
+    "figmaName": "Saint Martin (French part)",
+    "iso2": "mf",
+    "special": false
+  },
+  {
+    "slug": "saint-pierre-and-miquelon",
+    "figmaName": "Saint Pierre and Miquelon",
+    "iso2": "pm",
+    "special": false
+  },
+  {
+    "slug": "saint-vincent-and-the-grenadines",
+    "figmaName": "Saint Vincent and the Grenadines",
+    "iso2": "vc",
+    "special": false
+  },
+  {
+    "slug": "samoa",
+    "figmaName": "Samoa",
+    "iso2": "ws",
+    "special": false
+  },
+  {
+    "slug": "san-marino",
+    "figmaName": "San Marino",
+    "iso2": "sm",
+    "special": false
+  },
+  {
+    "slug": "sao-tome-and-principe",
+    "figmaName": "Sao Tome and Principe",
+    "iso2": "st",
+    "special": false
+  },
+  {
+    "slug": "saudi-arabia",
+    "figmaName": "Saudi Arabia",
+    "iso2": "sa",
+    "special": false
+  },
+  {
+    "slug": "senegal",
+    "figmaName": "Senegal",
+    "iso2": "sn",
+    "special": false
+  },
+  {
+    "slug": "serbia",
+    "figmaName": "Serbia",
+    "iso2": "rs",
+    "special": false
+  },
+  {
+    "slug": "seychelles",
+    "figmaName": "Seychelles",
+    "iso2": "sc",
+    "special": false
+  },
+  {
+    "slug": "sierra-leone",
+    "figmaName": "Sierra Leone",
+    "iso2": "sl",
+    "special": false
+  },
+  {
+    "slug": "singapore",
+    "figmaName": "Singapore",
+    "iso2": "sg",
+    "special": false
+  },
+  {
+    "slug": "sint-maarten-dutch-part",
+    "figmaName": "Sint Maarten (Dutch part)",
+    "iso2": "sx",
+    "special": false
+  },
+  {
+    "slug": "slovakia",
+    "figmaName": "Slovakia",
+    "iso2": "sk",
+    "special": false
+  },
+  {
+    "slug": "slovenia",
+    "figmaName": "Slovenia",
+    "iso2": "si",
+    "special": false
+  },
+  {
+    "slug": "solomon-islands",
+    "figmaName": "Solomon Islands",
+    "iso2": "sb",
+    "special": false
+  },
+  {
+    "slug": "somalia",
+    "figmaName": "Somalia",
+    "iso2": "so",
+    "special": false
+  },
+  {
+    "slug": "somaliland",
+    "figmaName": "Somaliland",
+    "iso2": "xl",
+    "special": true
+  },
+  {
+    "slug": "south-africa",
+    "figmaName": "South Africa",
+    "iso2": "za",
+    "special": false
+  },
+  {
+    "slug": "south-georgia-and-the-south-sandwich-islands",
+    "figmaName": "South Georgia and the South Sandwich Islands",
+    "iso2": "gs",
+    "special": false
+  },
+  {
+    "slug": "south-sudan",
+    "figmaName": "South Sudan",
+    "iso2": "ss",
+    "special": false
+  },
+  {
+    "slug": "spain",
+    "figmaName": "Spain",
+    "iso2": "es",
+    "special": false
+  },
+  {
+    "slug": "sri-lanka",
+    "figmaName": "Sri Lanka",
+    "iso2": "lk",
+    "special": false
+  },
+  {
+    "slug": "sudan",
+    "figmaName": "Sudan",
+    "iso2": "sd",
+    "special": false
+  },
+  {
+    "slug": "suriname",
+    "figmaName": "Suriname",
+    "iso2": "sr",
+    "special": false
+  },
+  {
+    "slug": "sweden",
+    "figmaName": "Sweden",
+    "iso2": "se",
+    "special": false
+  },
+  {
+    "slug": "switzerland",
+    "figmaName": "Switzerland",
+    "iso2": "ch",
+    "special": false
+  },
+  {
+    "slug": "syrian-arab-republic",
+    "figmaName": "Syrian Arab Republic",
+    "iso2": "sy",
+    "special": false
+  },
+  {
+    "slug": "taiwan",
+    "figmaName": "Taiwan",
+    "iso2": "tw",
+    "special": false
+  },
+  {
+    "slug": "tajikistan",
+    "figmaName": "Tajikistan",
+    "iso2": "tj",
+    "special": false
+  },
+  {
+    "slug": "tanzania",
+    "figmaName": "Tanzania",
+    "iso2": "tz",
+    "special": false
+  },
+  {
+    "slug": "thailand",
+    "figmaName": "Thailand",
+    "iso2": "th",
+    "special": false
+  },
+  {
+    "slug": "timor-leste",
+    "figmaName": "Timor-Leste",
+    "iso2": "tl",
+    "special": false
+  },
+  {
+    "slug": "togo",
+    "figmaName": "Togo",
+    "iso2": "tg",
+    "special": false
+  },
+  {
+    "slug": "tokelau",
+    "figmaName": "Tokelau",
+    "iso2": "tk",
+    "special": false
+  },
+  {
+    "slug": "tonga",
+    "figmaName": "Tonga",
+    "iso2": "to",
+    "special": false
+  },
+  {
+    "slug": "transnistria",
+    "figmaName": "Transnistria",
+    "iso2": "md",
+    "special": true
+  },
+  {
+    "slug": "trinidad-and-tobago",
+    "figmaName": "Trinidad and Tobago",
+    "iso2": "tt",
+    "special": false
+  },
+  {
+    "slug": "tunisia",
+    "figmaName": "Tunisia",
+    "iso2": "tn",
+    "special": false
+  },
+  {
+    "slug": "turkey",
+    "figmaName": "Turkey",
+    "iso2": "tr",
+    "special": false
+  },
+  {
+    "slug": "turkmenistan",
+    "figmaName": "Turkmenistan",
+    "iso2": "tm",
+    "special": false
+  },
+  {
+    "slug": "turks-and-caicos-islands",
+    "figmaName": "Turks and Caicos Islands",
+    "iso2": "tc",
+    "special": false
+  },
+  {
+    "slug": "tuvalu",
+    "figmaName": "Tuvalu",
+    "iso2": "tv",
+    "special": false
+  },
+  {
+    "slug": "uganda",
+    "figmaName": "Uganda",
+    "iso2": "ug",
+    "special": false
+  },
+  {
+    "slug": "ukraine",
+    "figmaName": "Ukraine",
+    "iso2": "ua",
+    "special": false
+  },
+  {
+    "slug": "united-arab-emirates",
+    "figmaName": "United Arab Emirates",
+    "iso2": "ae",
+    "special": false
+  },
+  {
+    "slug": "united-kingdom-of-great-britain-and-northern-ireland",
+    "figmaName": "United Kingdom of Great Britain and Northern Ireland",
+    "iso2": "gb",
+    "special": false
+  },
+  {
+    "slug": "united-nations",
+    "figmaName": "United Nations",
+    "iso2": "un",
+    "special": true
+  },
+  {
+    "slug": "united-states-of-america",
+    "figmaName": "United States of America",
+    "iso2": "us",
+    "special": false
+  },
+  {
+    "slug": "unknown",
+    "figmaName": "Unknown",
+    "iso2": "zz",
+    "special": true
+  },
+  {
+    "slug": "uruguay",
+    "figmaName": "Uruguay",
+    "iso2": "uy",
+    "special": false
+  },
+  {
+    "slug": "uzbekistan",
+    "figmaName": "Uzbekistan",
+    "iso2": "uz",
+    "special": false
+  },
+  {
+    "slug": "vanuatu",
+    "figmaName": "Vanuatu",
+    "iso2": "vu",
+    "special": false
+  },
+  {
+    "slug": "venezuela-bolivarian-republic-of",
+    "figmaName": "Venezuela (Bolivarian Republic of)",
+    "iso2": "ve",
+    "special": false
+  },
+  {
+    "slug": "viet-nam",
+    "figmaName": "Viet Nam",
+    "iso2": "vn",
+    "special": false
+  },
+  {
+    "slug": "virgin-islands-british",
+    "figmaName": "Virgin Islands (British)",
+    "iso2": "vg",
+    "special": false
+  },
+  {
+    "slug": "virgin-islands-u-s",
+    "figmaName": "Virgin Islands (U.S.)",
+    "iso2": "vi",
+    "special": false
+  },
+  {
+    "slug": "wallis-and-futuna",
+    "figmaName": "Wallis and Futuna",
+    "iso2": "wf",
+    "special": false
+  },
+  {
+    "slug": "western-sahara",
+    "figmaName": "Western Sahara",
+    "iso2": "eh",
+    "special": false
+  },
+  {
+    "slug": "yemen",
+    "figmaName": "Yemen",
+    "iso2": "ye",
+    "special": false
+  },
+  {
+    "slug": "zambia",
+    "figmaName": "Zambia",
+    "iso2": "zm",
+    "special": false
+  },
+  {
+    "slug": "zimbabwe",
+    "figmaName": "Zimbabwe",
+    "iso2": "zw",
+    "special": false
+  }
+]

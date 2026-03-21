@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useTheme } from "./theme-provider";
-import { ChevronDown, Code } from "lucide-react";
+import { ChevronDown, Code, Heading2, LayoutGrid, Type } from "lucide-react";
 import { CodeModal } from "./code-modal";
+import { SegmentedControl } from "./design-system-controls";
 import lightTokens from "../../imports/Ligth_mode.tokens-3.json";
 import darkTokens from "../../imports/darkmode.tokens-3.json";
 
@@ -168,7 +169,7 @@ color: ${currentColor};
   return (
     <div className="">
       {/* Header */}
-      <div className="mb-8 pr-72">
+      <div className="mb-8 pr-80">
         <div className="flex items-start justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -181,28 +182,53 @@ color: ${currentColor};
           </div>
         </div>
 
-        {/* Filter tabs */}
-        <div className="flex gap-1 mb-6">
-          {(["ALL", "HEADING", "BODY"] as const).map((cat) => (
+        {/* Filter tabs — segmented control (matches ColorsView view mode) */}
+        <div className="flex items-center justify-start gap-2 mb-6">
+          <div className="flex items-center bg-white dark:bg-gray-900 rounded-xl p-1 border border-gray-200 dark:border-gray-700">
             <button
-              key={cat}
-              onClick={() => setFilterCategory(cat)}
-              className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
-                filterCategory === cat
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+              type="button"
+              onClick={() => setFilterCategory("ALL")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filterCategory === "ALL"
+                  ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
               }`}
             >
-              {cat === "ALL" ? "All Styles" : cat === "HEADING" ? "Headings" : "Body"}
+              <LayoutGrid className="w-4 h-4 shrink-0" />
+              All Styles
             </button>
-          ))}
+            <button
+              type="button"
+              onClick={() => setFilterCategory("HEADING")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filterCategory === "HEADING"
+                  ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+              }`}
+            >
+              <Heading2 className="w-4 h-4 shrink-0" />
+              Headings
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterCategory("BODY")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filterCategory === "BODY"
+                  ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+              }`}
+            >
+              <Type className="w-4 h-4 shrink-0" />
+              Body
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Main Content Area with Right Controls */}
       <div className="flex">
         {/* Typography Showcase */}
-        <div className="flex-1 pr-72 space-y-0">
+        <div className="flex-1 pr-80 space-y-0">
           {filteredStyles.map((style, idx) => {
             const text = editedTexts[style.id] || style.sampleText;
             const isSelected = selectedStyleId === style.id;
@@ -298,13 +324,23 @@ color: ${currentColor};
           })}
         </div>
 
-        {/* Right Controls Panel */}
-        <div className="fixed right-0 top-16 w-64 h-[calc(100vh-4rem)] shrink-0 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-[#111111] p-5 space-y-6 overflow-y-auto transition-colors z-10">
+        {/* Right Controls Panel — matches ButtonsView hierarchy */}
+        <div className="fixed right-0 top-16 w-80 h-[calc(100vh-4rem)] bg-white dark:bg-[#111111] border-l border-gray-200 dark:border-gray-800 overflow-y-auto z-10">
+          <div className="p-6 space-y-6">
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Controls</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Configure weight, font family, and preview text color.
+              </p>
+            </div>
+
+            <div className="h-px bg-gray-200 dark:bg-gray-800" />
+
           {/* Selected style detail */}
           {selectedStyle && (
             <>
               <div className="space-y-4">
-                <h3 className="text-xs text-gray-400 uppercase tracking-wider">
+                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Selected Style
                 </h3>
                 <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 flex items-center justify-center min-h-[80px]">
@@ -349,46 +385,32 @@ color: ${currentColor};
                 </button>
               </div>
 
-              <div className="border-t border-gray-200 dark:border-gray-800" />
+              <div className="h-px bg-gray-200 dark:bg-gray-800" />
             </>
           )}
 
-          <h3 className="text-xs text-gray-400 uppercase tracking-wider">
-            {selectedStyle ? "Global Controls" : "Controls"}
-          </h3>
-
-          {/* Font Weight */}
-          <div className="space-y-1.5">
-            <label className="text-sm text-gray-700 dark:text-gray-300">Weight</label>
-            <div className="flex flex-wrap gap-1.5">
-              {fontWeights.map((w) => (
-                <button
-                  key={w.value}
-                  onClick={() => setSelectedWeight(w.value)}
-                  className={`px-2.5 py-1.5 text-xs rounded-lg transition-colors ${
-                    selectedWeight === w.value
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  {w.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <SegmentedControl
+            label="Weight"
+            value={String(selectedWeight)}
+            options={fontWeights.map((w) => ({ value: String(w.value), label: w.label }))}
+            onChange={(v) => setSelectedWeight(Number(v))}
+          />
 
           {/* Font Family */}
-          <div className="space-y-1.5">
-            <label className="text-sm text-gray-700 dark:text-gray-300">Font Family</label>
-            <div className="px-3 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg text-gray-700 dark:text-gray-300 font-mono">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              Font Family
+            </label>
+            <div className="px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white font-mono">
               {fontFamily}
             </div>
           </div>
 
           {/* Text Color */}
-          <div className="space-y-1.5">
-            <label className="text-sm text-gray-700 dark:text-gray-300">Color</label>
-            <div className="">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              Color
+            </label>
               <button
                 ref={colorBtnRef}
                 onClick={() => setColorOpen(!colorOpen)}
@@ -410,7 +432,7 @@ color: ${currentColor};
                   }`}
                 />
               </button>
-            </div>
+          </div>
           </div>
         </div>
       </div>
