@@ -1,0 +1,63 @@
+/**
+ * Capa semántica del design system (tokens de consumo).
+ * Solo alias con var(): sin nuevos literales de color. Los valores reales viven en theme.css (:root / .dark).
+ * Uso en componentes: bg-[var(--ds-color-surface-app)] o style={{ color: 'var(--ds-color-primary)' }}.
+ */
+
+:root {
+  /* Superficies shell (mapean al layout actual vía tokens shadcn / theme) */
+  --ds-color-surface-app: var(--layout-page-bg);
+  --ds-color-surface-elevated: var(--card);
+  --ds-color-surface-chrome: var(--layout-chrome-bg);
+  --ds-color-surface-overlay: var(--popover);
+
+  /* Texto */
+  --ds-color-text-primary: var(--foreground);
+  --ds-color-text-muted: var(--muted-foreground);
+
+  /* Marca / acción */
+  --ds-color-primary: var(--primary);
+  --ds-color-on-primary: var(--primary-foreground);
+  --ds-color-accent: var(--accent);
+  --ds-color-on-accent: var(--accent-foreground);
+
+  /* Semántica estado (alias a escalas ya definidas en theme — sin hex nuevos) */
+  --ds-color-success: var(--chart-2);
+  --ds-color-warning: var(--chart-4);
+  --ds-color-error: var(--destructive);
+  --ds-color-on-error: var(--destructive-foreground);
+  --ds-color-info: var(--chart-1);
+
+  /* Bordes y radio */
+  --ds-color-border-default: var(--border);
+  --ds-radius-default: var(--radius);
+
+  /**
+   * Tipografía foundations (catálogo Typography).
+   * Valores px alineados a la escala ya usada en la vista; familia por defecto Roboto (fonts.css).
+   * La vista puede sobreescribir --ds-typography-font-family con el token JSON global.typography.fontFamily.Primary.
+   */
+  --ds-typography-font-family: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --ds-typography-h1-font-size: 64px;
+  --ds-typography-h1-line-height: 72px;
+  --ds-typography-h2-font-size: 48px;
+  --ds-typography-h2-line-height: 56px;
+  --ds-typography-h3-font-size: 36px;
+  --ds-typography-h3-line-height: 44px;
+  --ds-typography-h4-font-size: 30px;
+  --ds-typography-h4-line-height: 38px;
+  --ds-typography-h5-font-size: 24px;
+  --ds-typography-h5-line-height: 32px;
+  --ds-typography-h6-font-size: 20px;
+  --ds-typography-h6-line-height: 28px;
+  --ds-typography-body-xl-font-size: 20px;
+  --ds-typography-body-xl-line-height: 30px;
+  --ds-typography-body-lg-font-size: 18px;
+  --ds-typography-body-lg-line-height: 28px;
+  --ds-typography-body-md-font-size: 16px;
+  --ds-typography-body-md-line-height: 24px;
+  --ds-typography-body-sm-font-size: 14px;
+  --ds-typography-body-sm-line-height: 20px;
+  --ds-typography-body-xs-font-size: 12px;
+  --ds-typography-body-xs-line-height: 18px;
+}

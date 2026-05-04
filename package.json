@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "dev": "vite",
-    "flags:ingest": "node scripts/ingest-figma-flags.mjs"
+    "flags:ingest": "node desarrollo-listo/scripts/ingest-figma-flags.mjs",
+    "tokens:ds": "node desarrollo-listo/scripts/merge-ds-tokens.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -70,7 +73,9 @@
     "@tailwindcss/vite": "4.1.12",
     "@vitejs/plugin-react": "4.7.0",
     "tailwindcss": "4.1.12",
-    "vite": "6.3.5"
+    "typescript": "5.8.3",
+    "vite": "6.3.5",
+    "vitest": "3.2.4"
   },
   "peerDependencies": {
     "react": "18.3.1",

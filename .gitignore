@@ -1,8 +1,6 @@
 node_modules
-# Origen ZIP Figma (opcional); la ingesta copia a public/flags/
-public/flags-temp/
-public/flags/
-
-node_modules
 dist
 
+# Origen ZIP Figma (opcional); la ingesta copia a desarrollo-listo/public/flags/
+desarrollo-listo/public/flags-temp/
+desarrollo-listo/public/flags/
