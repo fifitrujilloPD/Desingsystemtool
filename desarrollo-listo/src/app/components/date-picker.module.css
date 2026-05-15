@@ -1,0 +1,175 @@
+/**
+ * Date picker field (Figma 977:294082) — solo input en catálogo.
+ */
+
+.root {
+  --ds-date-min-width: 320px;
+  --ds-date-width: 320px;
+  --ds-date-radius: 8px;
+  --ds-date-py: 14px;
+  --ds-date-pl: 12px;
+  --ds-date-pr: 14px;
+  --ds-date-gap-inner: 8px;
+  --ds-date-icon: 24px;
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  min-width: var(--ds-date-min-width);
+  max-width: var(--ds-date-width);
+}
+
+.field {
+  --ds-date-border-w: 1px;
+  --ds-date-border-color: var(--ds-input-border);
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+  padding: var(--ds-date-py) var(--ds-date-pr) var(--ds-date-py)
+    var(--ds-date-pl);
+  box-sizing: border-box;
+  border-radius: var(--ds-date-radius);
+  border: var(--ds-date-border-w) solid var(--ds-date-border-color);
+  background: var(--ds-date-bg);
+  cursor: default;
+  font-family: var(--ds-typography-font-family);
+  text-align: left;
+}
+
+.field[data-interactive="true"]:not([data-state="Disabled"]) {
+  cursor: pointer;
+}
+
+.field[data-state="Focused"],
+.field[data-state="Error"] {
+  --ds-date-border-w: 2px;
+}
+
+.field[data-state="Disabled"] {
+  cursor: not-allowed;
+  opacity: 0.92;
+}
+
+.row {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--ds-date-gap-inner);
+  min-width: 0;
+}
+
+.leadingIcon {
+  flex-shrink: 0;
+  font-size: var(--ds-date-icon);
+  width: var(--ds-date-icon);
+  height: var(--ds-date-icon);
+  line-height: var(--ds-date-icon);
+  color: var(--ds-date-calendar-icon);
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.value {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--ds-date-value);
+}
+
+.field[data-state="Default"][data-type="label"] .value[data-tone="placeholder"] {
+  color: var(--ds-date-placeholder);
+}
+
+.field[data-type="input"][data-state="Default"] .value[data-tone="placeholder"] {
+  color: var(--ds-date-secondary);
+}
+
+.floatWrap {
+  position: absolute;
+  left: 10px;
+  top: -8px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+  background: var(--ds-date-bg);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.floatText {
+  color: var(--ds-date-float-label);
+}
+
+.field[data-state="Error"] .floatText {
+  color: var(--ds-date-error-text);
+}
+
+.required {
+  color: var(--ds-date-required);
+}
+
+.field[data-state="Disabled"] .floatText,
+.field[data-state="Disabled"] .required {
+  color: var(--ds-date-disabled-text);
+}
+
+.subtitle {
+  padding: 0 4px 0 8px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--ds-date-subtitle);
+}
+
+.subtitle[data-tone="error"] {
+  color: var(--ds-date-error-text);
+}
+
+.field[data-type="input"] {
+  padding-top: calc(var(--ds-date-py) + 4px);
+}
+
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1rem;
+  width: 100%;
+  max-width: calc(2 * var(--ds-date-min-width) + 16px);
+}
+
+.matrixCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.matrixLabel {
+  font-size: var(--ds-typography-body-xs-font-size);
+  font-weight: 500;
+  color: var(--ds-color-control-ink-muted);
+  font-family: var(--ds-typography-font-family);
+}
+
+.matrixStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.stateStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-start;
+}

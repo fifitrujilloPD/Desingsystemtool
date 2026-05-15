@@ -1,0 +1,166 @@
+/**
+ * Tabs (Figma 2:8279) — Underline 20:7158 + Segmented 71:1612.
+ * Colores vía --ds-tab-* (JSON Feature 02).
+ */
+
+.root {
+  --ds-tab-padding-x: 12px;
+  --ds-tab-padding-top: 12px;
+  --ds-tab-padding-bottom: 16px;
+  --ds-tab-gap: 8px;
+  --ds-tab-icon-gap: 4px;
+  --ds-tab-icon-size: 20px;
+  --ds-tab-indicator-h: 2px;
+  --ds-tab-text-muted: var(--ds-color-control-ink-muted);
+  --ds-tab-text-active: var(--ds-color-brand-hover);
+  --ds-tab-indicator: var(--ds-color-brand-hover);
+  --ds-tab-bar-border: var(--ds-color-border-default);
+  --ds-tab-pill-track: var(--ds-color-surface-app);
+  --ds-tab-pill-active-bg: var(--ds-color-brand);
+  --ds-tab-pill-active-text: var(--ds-color-on-primary);
+  --ds-tab-pill-hover-text: var(--ds-color-brand);
+  --ds-tab-pill-border: var(--ds-input-border);
+  --ds-tab-pill-focus-inner: var(--ds-color-surface-elevated);
+  --ds-tab-pill-focus-outer: var(--ds-color-brand);
+  --ds-tab-pill-container-p: 4px;
+  --ds-tab-pill-container-gap: 8px;
+  --ds-tab-pill-container-radius: 8px;
+  --ds-tab-pill-item-px: 16px;
+  --ds-tab-pill-item-py: 10px;
+  --ds-tab-pill-item-radius: 6px;
+}
+
+/* ── Underline ── */
+
+.underlineBar {
+  display: flex;
+  border-bottom: 1px solid var(--ds-tab-bar-border);
+}
+
+.underlineTab {
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-tab-gap);
+  padding: var(--ds-tab-padding-top) var(--ds-tab-padding-x)
+    var(--ds-tab-padding-bottom);
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--ds-tab-text-muted);
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  font-weight: 400;
+  line-height: var(--ds-typography-body-md-line-height);
+  transition: color 0.15s ease, font-weight 0.15s ease;
+}
+
+.underlineTab[data-highlight="true"] {
+  color: var(--ds-tab-text-active);
+  font-weight: 500;
+}
+
+.underlineInner {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-tab-icon-gap);
+}
+
+.underlineIcon {
+  font-size: var(--ds-tab-icon-size);
+  color: inherit;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  line-height: 1;
+}
+
+.underlineIndicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--ds-tab-indicator-h);
+  background: var(--ds-tab-indicator);
+  transform: scaleX(0);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.underlineTab[data-show-indicator="true"] .underlineIndicator {
+  transform: scaleX(1);
+}
+
+/* ── Segmented ── */
+
+.pillBar {
+  display: flex;
+  gap: var(--ds-tab-pill-container-gap);
+  align-items: center;
+  padding: var(--ds-tab-pill-container-p);
+  border-radius: var(--ds-tab-pill-container-radius);
+  background: var(--ds-tab-pill-track);
+}
+
+.pillTab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ds-tab-pill-item-py) var(--ds-tab-pill-item-px);
+  border-radius: var(--ds-tab-pill-item-radius);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--ds-tab-text-muted);
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  font-weight: 500;
+  line-height: normal;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.pillTab[data-hover="true"]:not([data-active="true"]) {
+  color: var(--ds-tab-pill-hover-text);
+}
+
+.pillTab[data-active="true"] {
+  background: var(--ds-tab-pill-active-bg);
+  color: var(--ds-tab-pill-active-text);
+  border-color: var(--ds-tab-pill-border);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ds-color-control-ink) 15%, transparent);
+}
+
+.pillTab[data-focus="true"]:not([data-active="true"]) {
+  background: var(--ds-tab-pill-active-bg);
+  color: var(--ds-tab-pill-active-text);
+  border-color: var(--ds-tab-pill-border);
+  overflow: clip;
+  box-shadow:
+    0 0 0 1px var(--ds-tab-pill-focus-inner),
+    0 0 0 2px var(--ds-tab-pill-focus-outer);
+}
+
+.pillInner {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-tab-icon-gap);
+}
+
+.pillIcon {
+  font-size: var(--ds-tab-icon-size);
+  color: inherit;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  line-height: 1;
+}
+
+.stateGalleryLabel {
+  font-size: 0.625rem;
+  color: var(--ds-color-text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

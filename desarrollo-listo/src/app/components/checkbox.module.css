@@ -1,0 +1,150 @@
+/**
+ * Checkbox (Figma 6:6708) — medidas del frame; colores solo vía --ds-*.
+ */
+
+.root {
+  --ds-checkbox-size: 18px;
+  --ds-checkbox-radius: 2px;
+  --ds-checkbox-border-width: 2px;
+  --ds-checkbox-touch-target: 48px;
+  --ds-checkbox-state-layer: 40px;
+  --ds-checkbox-label-gap: 6px;
+  --ds-checkbox-disabled-opacity: 0.38;
+  /**
+   * Figma `check_small` / `check_indeterminate_small`: frame 24dp pero el glifo
+   * usa inset ~25% L/R y ~29–32% T/B; consumo visual ~14dp dentro del box 18dp.
+   */
+  --ds-checkbox-icon-size: 14px;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-checkbox-label-gap);
+  cursor: pointer;
+}
+
+.checkbox[data-disabled="true"] {
+  cursor: not-allowed;
+  opacity: var(--ds-checkbox-disabled-opacity);
+}
+
+/* Color base del state layer (hover/focus/press) */
+.checkbox[data-type="selected"],
+.checkbox[data-type="indeterminate"] {
+  --ds-checkbox-state-color: var(--ds-color-brand);
+}
+
+.checkbox[data-type="unselected"] {
+  --ds-checkbox-state-color: var(--ds-color-control-ink);
+}
+
+.touchTarget {
+  width: var(--ds-checkbox-touch-target);
+  height: var(--ds-checkbox-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stateLayer {
+  position: relative;
+  width: var(--ds-checkbox-state-layer);
+  height: var(--ds-checkbox-state-layer);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.checkbox[data-state="hover"] .stateLayer {
+  background: color-mix(
+    in srgb,
+    var(--ds-checkbox-state-color) 8%,
+    transparent
+  );
+}
+
+.checkbox[data-state="focus"] .stateLayer,
+.checkbox[data-state="pressed"] .stateLayer {
+  background: color-mix(
+    in srgb,
+    var(--ds-checkbox-state-color) 12%,
+    transparent
+  );
+}
+
+.box {
+  width: var(--ds-checkbox-size);
+  height: var(--ds-checkbox-size);
+  border-radius: var(--ds-checkbox-radius);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+/** Glifo centrado en el state layer (misma posición que Figma 6:6708). */
+.iconOverlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--ds-checkbox-icon-size);
+  height: var(--ds-checkbox-icon-size);
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-on-primary);
+  pointer-events: none;
+}
+
+.iconSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Selected / indeterminate */
+.checkbox[data-type="selected"] .box,
+.checkbox[data-type="indeterminate"] .box {
+  background: var(--ds-color-brand);
+  border: none;
+}
+
+.checkbox[data-disabled="true"][data-type="selected"] .box,
+.checkbox[data-disabled="true"][data-type="indeterminate"] .box {
+  background: var(--ds-color-control-ink);
+}
+
+/* Unselected */
+.checkbox[data-type="unselected"] .box {
+  background: transparent;
+  border: var(--ds-checkbox-border-width) solid
+    var(--ds-color-control-ink-muted);
+}
+
+.checkbox[data-disabled="true"][data-type="unselected"] .box {
+  border-color: var(--ds-color-control-ink);
+}
+
+.label {
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ds-color-control-ink);
+}
+
+.checkbox[data-disabled="true"] .label {
+  color: var(--ds-color-control-ink-muted);
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

@@ -1,0 +1,404 @@
+/**
+ * Inputs (Figma 2:8432) — medidas existentes; colores solo vía --ds-*.
+ */
+
+.root {
+  --ds-input-radius: 8px;
+  --ds-input-padding-x: 12px;
+  --ds-input-padding-y: 14px;
+  --ds-input-max-width: 320px;
+  --ds-input-icon-gap: 8px;
+  --ds-input-border-w: 1px;
+  --ds-input-current-border: var(--ds-input-border);
+}
+
+.previewWrap {
+  width: 100%;
+  max-width: var(--ds-input-max-width);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.previewWrap[data-variant="number"] {
+  max-width: 324px;
+}
+
+.field {
+  --ds-input-current-border: var(--ds-input-border);
+  --ds-input-border-w: 1px;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-input-icon-gap);
+  padding: var(--ds-input-padding-y) var(--ds-input-padding-x);
+  padding-right: 14px;
+  border-radius: var(--ds-input-radius);
+  border: var(--ds-input-border-w) solid var(--ds-input-current-border);
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  line-height: var(--ds-typography-body-md-line-height);
+  position: relative;
+  width: 100%;
+  max-width: var(--ds-input-max-width);
+  min-width: 0;
+  box-sizing: border-box;
+  background: transparent;
+  transition:
+    border-color 0.15s ease,
+    border-width 0.15s ease;
+}
+
+.field[data-state="focused"] {
+  --ds-input-current-border: var(--ds-input-border-focus);
+  --ds-input-border-w: 1.5px;
+}
+
+.field[data-state="error"] {
+  --ds-input-current-border: var(--ds-input-border-error);
+}
+
+.field[data-state="disabled"] {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.field:not([data-state="disabled"]) {
+  cursor: text;
+}
+
+.materialIcon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  color: inherit;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.field[data-state="disabled"] .materialIcon,
+.field[data-state="disabled"] .nativeInput {
+  color: var(--ds-input-text-disabled);
+}
+
+.field[data-state="default"] .materialIcon {
+  color: var(--ds-color-control-ink-muted);
+}
+
+.field[data-state="default"][data-has-value="true"] .materialIcon,
+.field[data-state="filled"] .materialIcon,
+.field[data-state="focused"] .materialIcon {
+  color: var(--ds-color-control-ink);
+}
+
+.field[data-state="focused"] .materialIcon {
+  color: var(--ds-color-control-ink);
+}
+
+.nativeInput {
+  flex: 1;
+  min-width: 0;
+  font-weight: 400;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.field[data-state="default"]:not([data-has-value="true"]) .nativeInput {
+  color: var(--ds-color-control-ink-muted);
+}
+
+.field[data-state="default"][data-has-value="true"] .nativeInput,
+.field[data-state="filled"] .nativeInput,
+.field[data-state="focused"] .nativeInput {
+  color: var(--ds-color-control-ink);
+}
+
+.field[data-state="error"] .nativeInput {
+  color: var(--ds-color-control-ink);
+}
+
+.floatingLabel {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  width: fit-content;
+  max-width: calc(100% - 20px);
+  padding-left: 4px;
+  padding-right: 4px;
+  background: var(--ds-input-surface);
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--ds-typography-body-xs-font-size);
+  line-height: normal;
+  font-family: var(--ds-typography-font-family);
+  box-sizing: border-box;
+}
+
+.floatingLabelText {
+  width: fit-content;
+  max-width: 100%;
+  flex: none;
+}
+
+.field[data-state="default"] .floatingLabelText {
+  color: var(--ds-color-control-ink);
+}
+
+.field[data-state="focused"] .floatingLabelText {
+  color: var(--ds-color-control-ink-muted);
+}
+
+.field[data-state="filled"] .floatingLabelText,
+.field[data-state="error"] .floatingLabelText {
+  color: var(--ds-color-control-ink);
+}
+
+.field[data-state="disabled"] .floatingLabelText {
+  color: var(--ds-input-text-disabled);
+}
+
+.requiredMark {
+  flex-shrink: 0;
+  text-align: center;
+  color: var(--ds-input-text-error);
+}
+
+.helper {
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 8px;
+  padding-right: 4px;
+  margin-top: 2px;
+  font-size: var(--ds-typography-body-sm-font-size);
+  line-height: var(--ds-typography-body-sm-line-height);
+  font-family: var(--ds-typography-font-family);
+  color: var(--ds-color-control-ink-muted);
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.helper[data-state="error"] {
+  color: var(--ds-input-text-error);
+}
+
+.helper[data-state="disabled"] {
+  color: var(--ds-input-text-disabled);
+}
+
+/* ── Number / tel prefix ── */
+
+.numberRow {
+  --ds-input-current-border: var(--ds-input-border);
+  --ds-input-border-w: 1px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  position: relative;
+}
+
+.numberCluster {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 48px;
+}
+
+.numberRow[data-state="default"] .nativeInput,
+.numberRow[data-state="filled"] .nativeInput,
+.numberRow[data-state="focused"] .nativeInput,
+.numberRow[data-state="error"] .nativeInput {
+  color: var(--ds-color-control-ink);
+}
+
+.numberRow[data-state="default"] .nativeInput::placeholder {
+  color: var(--ds-color-control-ink-muted);
+}
+
+.numberRow[data-state="disabled"] .nativeInput,
+.numberRow[data-state="disabled"] .nativeInput::placeholder {
+  color: var(--ds-input-text-disabled);
+}
+
+.numberRow[data-state="default"] .floatingLabelText,
+.numberRow[data-state="filled"] .floatingLabelText,
+.numberRow[data-state="error"] .floatingLabelText {
+  color: var(--ds-color-control-ink);
+}
+
+.numberRow[data-state="focused"] .floatingLabelText {
+  color: var(--ds-color-control-ink-muted);
+}
+
+.numberRow[data-state="disabled"] .floatingLabelText {
+  color: var(--ds-input-text-disabled);
+}
+
+.prefix {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 12px;
+  border-top-left-radius: var(--ds-input-radius);
+  border-bottom-left-radius: var(--ds-input-radius);
+  border: var(--ds-input-border-w) solid var(--ds-input-current-border);
+  width: auto;
+  flex-shrink: 0;
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  line-height: var(--ds-typography-body-md-line-height);
+  color: var(--ds-color-control-ink);
+  background: transparent;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    border-width 0.15s ease;
+}
+
+.numberRow[data-state="focused"] .prefix,
+.numberRow[data-state="focused"] .numberField {
+  --ds-input-current-border: var(--ds-input-border-focus);
+  --ds-input-border-w: 1.5px;
+}
+
+.numberRow[data-state="error"] .prefix,
+.numberRow[data-state="error"] .numberField {
+  --ds-input-current-border: var(--ds-input-border-error);
+}
+
+.numberRow[data-state="disabled"] .prefix {
+  cursor: not-allowed;
+  opacity: 0.7;
+  color: var(--ds-input-text-disabled);
+}
+
+.numberRow[data-state="disabled"] .prefix {
+  cursor: not-allowed;
+}
+
+.prefix:not([data-disabled="true"]) {
+  cursor: pointer;
+}
+
+.flagIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+  background: color-mix(in srgb, var(--ds-input-border) 40%, transparent);
+}
+
+.prefixChevron {
+  font-size: 24px;
+  line-height: 1;
+  color: var(--ds-color-control-ink);
+  transition: transform 0.2s;
+}
+
+.prefixChevron[data-open="true"] {
+  transform: rotate(180deg);
+}
+
+.numberField {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 14px 12px;
+  padding-right: 14px;
+  border-top-right-radius: var(--ds-input-radius);
+  border-bottom-right-radius: var(--ds-input-radius);
+  border: var(--ds-input-border-w) solid var(--ds-input-current-border);
+  border-left: none;
+  box-sizing: border-box;
+  background: transparent;
+  transition:
+    border-color 0.15s ease,
+    border-width 0.15s ease;
+}
+
+.numberRow[data-state="disabled"] .numberField {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  width: 280px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--ds-input-surface);
+  border: 1px solid var(--ds-input-border);
+  border-radius: var(--ds-input-radius);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--ds-color-control-ink) 12%, transparent);
+  z-index: 50;
+  font-family: var(--ds-typography-font-family);
+}
+
+.dropdownSearchWrap {
+  position: sticky;
+  top: 0;
+  background: var(--ds-input-surface);
+  padding: 8px;
+  border-bottom: 1px solid var(--ds-input-border);
+}
+
+.dropdownSearch {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 1px solid var(--ds-input-border);
+  border-radius: 6px;
+  outline: none;
+  font-family: var(--ds-typography-font-family);
+  color: var(--ds-color-control-ink);
+  background: transparent;
+}
+
+.dropdownSearch:focus {
+  border-color: var(--ds-input-border-focus);
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: var(--ds-typography-body-sm-font-size);
+  color: var(--ds-color-control-ink);
+  transition: background-color 0.1s;
+}
+
+.dropdownItem:hover {
+  background: color-mix(in srgb, var(--ds-input-border) 30%, transparent);
+}
+
+.dropdownItem[data-selected="true"] {
+  color: var(--ds-color-brand);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--ds-color-brand) 10%, transparent);
+}
+
+.dropdownItemCode {
+  font-size: var(--ds-typography-body-xs-font-size);
+  color: var(--ds-color-control-ink-muted);
+  font-family: ui-monospace, monospace;
+}
+
+.dropdownEmpty {
+  padding: 16px 12px;
+  font-size: 13px;
+  color: var(--ds-input-text-disabled);
+  text-align: center;
+}

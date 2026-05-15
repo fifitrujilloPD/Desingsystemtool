@@ -1,0 +1,139 @@
+/**
+ * File upload base (Figma 978:299120) — zona clic / drag (solo UI catálogo).
+ */
+
+.root {
+  --ds-file-max-width: min(100%, 512px);
+  --ds-file-min-width: 320px;
+  --ds-file-radius: 12px;
+  --ds-file-px: 24px;
+  --ds-file-py: 16px;
+  --ds-file-gap-main: 12px;
+  --ds-file-gap-text: 4px;
+  --ds-file-icon-box: 40px;
+  --ds-file-icon-inner: 24px;
+  --ds-file-icon-radius: 8px;
+}
+
+.zone {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: var(--ds-file-min-width);
+  max-width: var(--ds-file-max-width);
+  margin: 0;
+  padding: var(--ds-file-py) var(--ds-file-px);
+  border-style: solid;
+  border-width: var(--ds-file-zone-border-w);
+  border-color: var(--ds-file-zone-border);
+  border-radius: var(--ds-file-radius);
+  background: var(--ds-file-zone-bg);
+  font-family: var(--ds-typography-font-family);
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-file-gap-main);
+  text-align: center;
+}
+
+.zone[data-interactive="true"]:not([data-visual="disabled"]) {
+  cursor: pointer;
+}
+
+.zone[data-visual="disabled"] {
+  cursor: not-allowed;
+  opacity: 0.92;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-file-gap-main);
+  width: 100%;
+}
+
+.iconWrap {
+  flex-shrink: 0;
+  width: var(--ds-file-icon-box);
+  height: var(--ds-file-icon-box);
+  border-radius: var(--ds-file-icon-radius);
+  border: 1px solid var(--ds-file-icon-border);
+  background: var(--ds-file-icon-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.iconWrap .material {
+  font-size: var(--ds-file-icon-inner);
+  width: var(--ds-file-icon-inner);
+  height: var(--ds-file-icon-inner);
+  line-height: var(--ds-file-icon-inner);
+  color: var(--ds-file-icon-ink);
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.textCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-file-gap-text);
+  width: 100%;
+}
+
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--ds-file-gap-text);
+  width: 100%;
+}
+
+.cta {
+  font-size: var(--ds-typography-body-sm-font-size, 14px);
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--ds-file-cta);
+  white-space: nowrap;
+}
+
+.tail {
+  font-size: var(--ds-typography-body-sm-font-size, 14px);
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--ds-file-tail);
+  white-space: nowrap;
+}
+
+.hint {
+  font-size: var(--ds-typography-body-xs-font-size, 12px);
+  line-height: 16px;
+  font-weight: 400;
+  color: var(--ds-file-hint);
+  width: 100%;
+}
+
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem 0.75rem;
+  width: 100%;
+  max-width: calc(3 * var(--ds-file-min-width) + 2 * 12px);
+}
+
+.matrixCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.matrixLabel {
+  font-size: var(--ds-typography-body-xs-font-size);
+  font-weight: 500;
+  color: var(--ds-color-control-ink-muted);
+  font-family: var(--ds-typography-font-family);
+}

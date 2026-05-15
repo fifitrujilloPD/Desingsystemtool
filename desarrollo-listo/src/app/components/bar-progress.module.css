@@ -1,0 +1,223 @@
+/**
+ * Bar progress (Figma 977:298525) — track + fill + label/tooltip variants.
+ */
+
+.root {
+  --ds-bar-height: 8px;
+  --ds-bar-radius: 9999px;
+  --ds-bar-fill-radius-floating: 4px;
+  --ds-bar-gap-right: 12px;
+  --ds-bar-gap-bottom: 8px;
+  --ds-bar-tooltip-offset-over: 42px;
+  --ds-bar-tooltip-offset-under: 16px;
+  --ds-bar-tooltip-px: 12px;
+  --ds-bar-tooltip-py: 8px;
+  --ds-bar-tooltip-radius: 8px;
+  --ds-bar-tooltip-line-height: 16px;
+  --ds-bar-preview-width: 428px;
+  --ds-bar-track-bg: var(--ds-color-brand-ships, #e8f2fa);
+  --ds-bar-fill-bg: var(--ds-color-brand);
+  --ds-bar-label-color: var(--ds-color-control-ink-muted);
+  --ds-bar-tooltip-bg: var(--ds-color-surface-elevated);
+  --ds-bar-tooltip-border: var(--ds-color-border-default);
+  --ds-bar-tooltip-text: var(--ds-color-control-ink-muted);
+  --ds-bar-tooltip-shadow:
+    0 12px 16px -4px color-mix(in srgb, var(--ds-color-control-ink) 8%, transparent),
+    0 4px 6px -2px color-mix(in srgb, var(--ds-color-control-ink) 3%, transparent);
+}
+
+.host {
+  width: 100%;
+  max-width: var(--ds-bar-preview-width);
+  box-sizing: border-box;
+}
+
+.host[data-style="none"] {
+  display: block;
+}
+
+.host[data-style="right"] {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-bar-gap-right);
+}
+
+.host[data-style="bottom"] {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--ds-bar-gap-bottom);
+}
+
+.host[data-style="floating-over"],
+.host[data-style="floating-bottom"] {
+  display: block;
+}
+
+/* Reserva espacio para el tooltip “over” (Figma top: -42px desde la barra) */
+.host[data-style="floating-over"] {
+  padding-top: calc(
+    var(--ds-bar-tooltip-offset-over) + var(--ds-bar-tooltip-py) * 2 +
+      var(--ds-bar-tooltip-line-height)
+  );
+}
+
+.track {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  height: var(--ds-bar-height);
+  border-radius: var(--ds-bar-radius);
+  background: var(--ds-bar-track-bg);
+  overflow: visible;
+}
+
+.host[data-style="right"] .track {
+  flex: 1 1 0;
+}
+
+.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  min-width: 0;
+  border-radius: var(--ds-bar-radius);
+  background: var(--ds-bar-fill-bg);
+  transition: width 0.2s ease;
+}
+
+.host[data-style="floating-over"] .fill,
+.host[data-style="floating-bottom"] .fill {
+  border-radius: var(--ds-bar-fill-radius-floating);
+  overflow: visible;
+}
+
+.label {
+  flex-shrink: 0;
+  color: var(--ds-bar-label-color);
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  font-weight: 400;
+  line-height: var(--ds-typography-body-md-line-height);
+  white-space: nowrap;
+}
+
+.tooltip {
+  position: absolute;
+  right: 0;
+  transform: translateX(50%);
+  min-width: 47px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Figma: tooltip top -42px respecto al extremo del fill */
+.host[data-style="floating-over"] .tooltip {
+  top: calc(-1 * var(--ds-bar-tooltip-offset-over));
+  bottom: auto;
+}
+
+.host[data-style="floating-bottom"] .tooltip {
+  top: var(--ds-bar-tooltip-offset-under);
+  bottom: auto;
+}
+
+.tooltipContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ds-bar-tooltip-py) var(--ds-bar-tooltip-px);
+  border-radius: var(--ds-bar-tooltip-radius);
+  border: 1px solid var(--ds-bar-tooltip-border);
+  background: var(--ds-bar-tooltip-bg);
+  box-shadow: var(--ds-bar-tooltip-shadow);
+  color: var(--ds-bar-tooltip-text);
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-xs-font-size);
+  font-weight: 500;
+  line-height: var(--ds-bar-tooltip-line-height);
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Gallery — preview card debe crecer (5 variantes + tooltips flotantes) */
+
+.previewCardGallery {
+  overflow: visible;
+  min-height: 520px;
+}
+
+.previewCardFloating {
+  overflow: visible;
+  min-height: 160px;
+}
+
+.previewStageFloating {
+  align-items: stretch;
+  justify-content: center;
+  padding: 1rem 1.25rem;
+  overflow: visible;
+}
+
+.previewStageGallery {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 1rem 1.25rem 1.25rem;
+  overflow-x: visible;
+  overflow-y: auto;
+}
+
+.previewWrap {
+  width: 100%;
+  max-width: var(--ds-bar-preview-width);
+  min-width: 0;
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+  max-width: var(--ds-bar-preview-width);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.galleryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Tooltip bajo la barra (floating bottom) */
+.host[data-style="floating-bottom"] {
+  padding-bottom: calc(
+    var(--ds-bar-tooltip-offset-under) + var(--ds-bar-tooltip-py) * 2 +
+      var(--ds-bar-tooltip-line-height)
+  );
+}
+
+.galleryLabel {
+  font-size: 0.625rem;
+  color: var(--ds-color-text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stateGallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.stateGalleryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

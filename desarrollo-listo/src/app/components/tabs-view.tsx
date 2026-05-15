@@ -1,86 +1,70 @@
 import { useState, useMemo, useEffect } from "react";
-import { useTheme } from "./theme-provider";
 import { CodeXml } from "lucide-react";
 import { SegmentedControl, ControlSelect } from "./design-system-controls";
 import { Switch } from "./ui/switch";
-import lightTokens from "../../imports/Ligth_mode.tokens-3.json";
-import darkTokens from "../../imports/darkmode.tokens-3.json";
 import { CodeModal } from "./code-modal";
 import { useControlsPanel } from "./controls-panel-context";
 import { ControlsPanelFrame } from "./controls-panel-frame";
+import { useTheme } from "./theme-provider";
 import { allMaterialIconNames } from "../data/material-icon-catalog";
-
-// ─── Types (from Figma MCP) ───────────────────────────────────────────────
-// Underline: node 20:7158 — State Default/Hover/press/Selected
-// Segmented: nodes 71:1599 (Building Blocks) + 71:1612 (Component 120)
+import {
+  resolveJsonBackgroundColor,
+  resolveJsonBorderColor,
+  resolveJsonButtonColor,
+  resolveJsonTextColor,
+} from "../utils/token-parser";
+import shell from "./radio-button.module.css";
+import styles from "./tabs.module.css";
 
 type TabVariant = "Underline" | "Segmented";
-
 type TabState = "Default" | "Hover" | "Press" | "Selected";
 
-// ─── Token helpers ──────────────────────────────────────────────────────────
-
-function resolveRef(ref: string, root: any): string | null {
-  const path = ref.replace(/[{}]/g, "").split(".");
-  let current = root;
-  for (const p of path) {
-    current = current?.[p];
-    if (!current) return null;
-  }
-  return current?.$value?.hex || null;
+function tabThemeVars(mode: "light" | "dark"): React.CSSProperties {
+  return {
+    ["--ds-tab-text-muted" as string]: resolveJsonTextColor(
+      "text-secondary",
+      mode,
+    ),
+    ["--ds-tab-text-active" as string]: resolveJsonButtonColor(
+      "button-hover",
+      mode,
+    ),
+    ["--ds-tab-indicator" as string]: resolveJsonButtonColor("button-hover", mode),
+    ["--ds-tab-pill-track" as string]: resolveJsonBackgroundColor(
+      "bg-primary",
+      mode,
+    ),
+    ["--ds-tab-pill-active-bg" as string]: resolveJsonButtonColor(
+      "button-color",
+      mode,
+    ),
+    ["--ds-tab-pill-active-text" as string]: resolveJsonTextColor(
+      "text-primary-white",
+      mode,
+    ),
+    ["--ds-tab-pill-hover-text" as string]: resolveJsonTextColor(
+      "text-primary-brand",
+      mode,
+    ),
+    ["--ds-tab-pill-border" as string]: resolveJsonBorderColor(
+      "border-primary",
+      mode,
+    ),
+    ["--ds-tab-pill-focus-inner" as string]: resolveJsonBackgroundColor(
+      "bg-container",
+      mode,
+    ),
+    ["--ds-tab-pill-focus-outer" as string]: resolveJsonButtonColor(
+      "button-press",
+      mode,
+    ),
+  };
 }
-
-function resolveColor(tokens: any, path: string): string {
-  const parts = path.split(".");
-  let current = tokens;
-  for (const p of parts) current = current?.[p];
-  const val = current?.$value;
-  if (!val) return "#000";
-  if (typeof val === "string" && val.startsWith("{"))
-    return resolveRef(val, tokens) || "#000";
-  return val?.hex || "#000";
-}
-
-// ─── Constants from Figma tokens ────────────────────────────────────────────
-
-const FONT_FAMILY =
-  (lightTokens as any)?.global?.typography?.fontFamily?.Primary?.$value ||
-  "Roboto";
-
-const TAB_FONT_SIZE = 16;
-const TAB_LINE_HEIGHT = 24;
-const TAB_PADDING_X = 12;
-const TAB_PADDING_TOP = 12;
-const TAB_PADDING_BOTTOM = 16;
-const TAB_GAP = 8;
-const INDICATOR_HEIGHT = 2;
-
-// Segmented (Building Blocks / Component 120) — Figma nodes 71:1599, 71:1612
-const PILL_CONTAINER_PADDING = 4;
-const PILL_CONTAINER_GAP = 8;
-const PILL_CONTAINER_RADIUS = 8;
-const PILL_ITEM_PADDING_X = 16;
-const PILL_ITEM_PADDING_Y = 10;
-const PILL_ITEM_RADIUS = 6;
-const PILL_FONT_SIZE = 16;
-const PILL_SELECTED_SHADOW = "0px 1px 2px 0px rgba(11, 18, 32, 0.15)";
-
-/** Gap between leading icon and label (product option). */
-const ICON_LABEL_GAP = 4;
-const TAB_ICON_SIZE = 20;
-
-const TAB_ICON_SYMBOL_STYLE: React.CSSProperties = {
-  fontSize: TAB_ICON_SIZE,
-  fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24",
-};
-
-// ─── Single tab item preview (Underline — Figma 20:7158) ────────────────────
 
 function TabItemPreview({
   label,
   state,
   isActive,
-  tokens,
   iconName,
   onClick,
   onMouseEnter,
@@ -89,21 +73,11 @@ function TabItemPreview({
   label: string;
   state: TabState;
   isActive: boolean;
-  tokens: any;
   iconName?: string | null;
   onClick?: () => void;
-  onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
-  onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
 }) {
-  const textSecondary = resolveColor(
-    tokens,
-    "global.color.Text colors.text-secondary"
-  );
-  const brandHover = resolveColor(
-    tokens,
-    "global.color.Button color.button-hover"
-  );
-
   const effectiveState = isActive ? "Selected" : state;
   const isHighlighted =
     effectiveState === "Selected" ||
@@ -112,91 +86,39 @@ function TabItemPreview({
   const showIndicator =
     effectiveState === "Selected" || effectiveState === "Press";
 
-  const textColor = isHighlighted ? brandHover : textSecondary;
-  const fontWeight = isHighlighted ? 500 : 400;
-
-  const itemStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: TAB_GAP,
-    paddingLeft: TAB_PADDING_X,
-    paddingRight: TAB_PADDING_X,
-    paddingTop: TAB_PADDING_TOP,
-    paddingBottom: TAB_PADDING_BOTTOM,
-    position: "relative",
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-    transition: "color 0.15s ease",
-  };
-
-  const textStyle: React.CSSProperties = {
-    fontFamily: `'${FONT_FAMILY}', sans-serif`,
-    fontSize: TAB_FONT_SIZE,
-    fontWeight,
-    lineHeight: `${TAB_LINE_HEIGHT}px`,
-    color: textColor,
-    transition: "color 0.15s ease, font-weight 0.15s ease",
-  };
-
-  const indicatorStyle: React.CSSProperties = {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: INDICATOR_HEIGHT,
-    backgroundColor: brandHover,
-    transform: showIndicator ? "scaleX(1)" : "scaleX(0)",
-    transition: "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-  };
-
-  const iconEl = iconName ? (
-    <span
-      className="material-symbols-rounded"
-      style={{
-        ...TAB_ICON_SYMBOL_STYLE,
-        color: textColor,
-      }}
-      aria-hidden
-    >
-      {iconName}
-    </span>
-  ) : null;
-
   return (
-    <div
-      style={itemStyle}
+    <button
+      type="button"
+      className={styles.underlineTab}
+      data-highlight={isHighlighted ? "true" : "false"}
+      data-show-indicator={showIndicator ? "true" : "false"}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       {iconName ? (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: ICON_LABEL_GAP,
-          }}
-        >
-          {iconEl}
-          <span style={textStyle}>{label}</span>
-        </div>
+        <span className={styles.underlineInner}>
+          <span
+            className={`material-symbols-rounded ${styles.underlineIcon}`}
+            aria-hidden
+          >
+            {iconName}
+          </span>
+          {label}
+        </span>
       ) : (
-        <span style={textStyle}>{label}</span>
+        label
       )}
-      <div style={indicatorStyle} />
-    </div>
+      <span className={styles.underlineIndicator} aria-hidden />
+    </button>
   );
 }
-
-// ─── Segmented tab item (Component 120 — Figma 71:1612) ─────────────────────
 
 function PillTabItemPreview({
   label,
   isActive,
   isHovered,
   isFocused,
-  tokens,
   iconName,
   onClick,
   onMouseEnter,
@@ -208,109 +130,21 @@ function PillTabItemPreview({
   isActive: boolean;
   isHovered: boolean;
   isFocused: boolean;
-  tokens: any;
   iconName?: string | null;
   onClick?: () => void;
-  onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
-  onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
-  onFocus?: React.FocusEventHandler<HTMLDivElement>;
-  onBlur?: React.FocusEventHandler<HTMLDivElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
+  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
+  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
 }) {
-  const buttonColor = resolveColor(
-    tokens,
-    "global.color.Button color.button-color"
-  );
-  const borderPrimary = resolveColor(
-    tokens,
-    "global.color.Border color.border-primary"
-  );
-  const bgContainer = resolveColor(
-    tokens,
-    "global.color.Background.bg-container"
-  );
-  const buttonPress = resolveColor(
-    tokens,
-    "global.color.Button color.button-press"
-  );
-  const textSecondary = resolveColor(
-    tokens,
-    "global.color.Text colors.text-secondary"
-  );
-  const textBrand = resolveColor(
-    tokens,
-    "global.color.Text colors.text-primary-brand"
-  );
-  const textWhite = resolveColor(
-    tokens,
-    "global.color.Text colors.text-primary-white"
-  );
-
-  let backgroundColor = "transparent";
-  let color = textSecondary;
-  let border: string = "1px solid transparent";
-  let boxShadow: string | undefined;
-  let overflow: React.CSSProperties["overflow"] = "visible";
-
-  if (isActive) {
-    backgroundColor = buttonColor;
-    color = textWhite;
-    border = `1px solid ${borderPrimary}`;
-    boxShadow = PILL_SELECTED_SHADOW;
-  } else if (isFocused) {
-    backgroundColor = buttonColor;
-    color = textWhite;
-    border = `1px solid ${borderPrimary}`;
-    overflow = "clip";
-    boxShadow = `0px 0px 0px 1px ${bgContainer}, 0px 0px 0px 2px ${buttonPress}`;
-  } else if (isHovered) {
-    color = textBrand;
-  }
-
-  const itemStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingLeft: PILL_ITEM_PADDING_X,
-    paddingRight: PILL_ITEM_PADDING_X,
-    paddingTop: PILL_ITEM_PADDING_Y,
-    paddingBottom: PILL_ITEM_PADDING_Y,
-    borderRadius: PILL_ITEM_RADIUS,
-    backgroundColor,
-    border,
-    boxShadow,
-    overflow,
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-    transition:
-      "background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease",
-  };
-
-  const textStyle: React.CSSProperties = {
-    fontFamily: `'${FONT_FAMILY}', sans-serif`,
-    fontSize: PILL_FONT_SIZE,
-    fontWeight: 500,
-    lineHeight: "normal",
-    color,
-  };
-
-  const iconEl = iconName ? (
-    <span
-      className="material-symbols-rounded"
-      style={{
-        ...TAB_ICON_SYMBOL_STYLE,
-        color,
-      }}
-      aria-hidden
-    >
-      {iconName}
-    </span>
-  ) : null;
-
   return (
-    <div
+    <button
+      type="button"
       role="tab"
-      tabIndex={0}
-      style={itemStyle}
+      className={styles.pillTab}
+      data-active={isActive ? "true" : "false"}
+      data-hover={isHovered ? "true" : "false"}
+      data-focus={isFocused ? "true" : "false"}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -318,63 +152,45 @@ function PillTabItemPreview({
       onBlur={onBlur}
     >
       {iconName ? (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: ICON_LABEL_GAP,
-          }}
-        >
-          {iconEl}
-          <span style={textStyle}>{label}</span>
-        </div>
+        <span className={styles.pillInner}>
+          <span
+            className={`material-symbols-rounded ${styles.pillIcon}`}
+            aria-hidden
+          >
+            {iconName}
+          </span>
+          {label}
+        </span>
       ) : (
-        <span style={textStyle}>{label}</span>
+        label
       )}
-    </div>
+    </button>
   );
 }
 
 function PillTabBar({
   labels,
   activeIndex,
-  tokens,
   iconName,
   onSelect,
 }: {
   labels: string[];
   activeIndex: number;
-  tokens: any;
   iconName?: string | null;
   onSelect: (index: number) => void;
 }) {
   const [hoveredTab, setHoveredTab] = useState<number | null>(null);
   const [focusedTab, setFocusedTab] = useState<number | null>(null);
 
-  const bgPrimary = resolveColor(
-    tokens,
-    "global.color.Background.bg-primary"
-  );
-
-  const containerStyle: React.CSSProperties = {
-    display: "flex",
-    gap: PILL_CONTAINER_GAP,
-    alignItems: "center",
-    padding: PILL_CONTAINER_PADDING,
-    borderRadius: PILL_CONTAINER_RADIUS,
-    backgroundColor: bgPrimary,
-  };
-
   return (
-    <div style={containerStyle}>
+    <div className={styles.pillBar}>
       {labels.map((label, i) => (
         <PillTabItemPreview
-          key={i}
+          key={label}
           label={label}
           isActive={i === activeIndex}
           isHovered={hoveredTab === i && i !== activeIndex}
           isFocused={focusedTab === i && i !== activeIndex}
-          tokens={tokens}
           iconName={iconName}
           onClick={() => onSelect(i)}
           onMouseEnter={() => setHoveredTab(i)}
@@ -387,62 +203,216 @@ function PillTabBar({
   );
 }
 
-// ─── State color card ───────────────────────────────────────────────────────
-
 function StateColorCard({
   label,
   hex,
-  tokenName,
+  jsonPath,
+  cssVar,
 }: {
   label: string;
   hex: string;
-  tokenName: string;
+  jsonPath: string;
+  cssVar: string;
 }) {
   return (
-    <div className="flex items-center gap-3 py-2">
+    <div className={shell.tokenRow}>
       <div
-        className="w-8 h-8 rounded-md border border-gray-200 dark:border-gray-700 shrink-0"
+        className={shell.tokenSwatch}
         style={{ backgroundColor: hex }}
+        title={hex}
       />
       <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-white">
-          {label}
+        <p className={shell.tokenTitle}>{label}</p>
+        <p className={shell.tokenMeta}>
+          var({cssVar}) · JSON {jsonPath}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono truncate">
-          {tokenName}
-        </p>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500 font-mono">
-          {hex}
-        </p>
+        <p className={shell.tokenHex}>{hex}</p>
       </div>
     </div>
   );
 }
 
-// ─── Spec row ───────────────────────────────────────────────────────────────
-
 function SpecRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between py-1.5">
-      <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
-      <span className="text-sm font-mono text-gray-900 dark:text-white">
-        {value}
-      </span>
+    <div className={shell.specRow}>
+      <span className={shell.specLabel}>{label}</span>
+      <span className={shell.specValue}>{value}</span>
     </div>
   );
 }
 
-// ─── Main view ──────────────────────────────────────────────────────────────
+function buildTabsSnippet(opts: {
+  variant: TabVariant;
+  labels: string[];
+  activeIndex: number;
+  showIcon: boolean;
+  iconName: string;
+  mode: "light" | "dark";
+}): { html: string; css: string } {
+  const { variant, labels, activeIndex, showIcon, iconName, mode } = opts;
+
+  const css = `/* Tabs — Figma 2:8279 */
+.ds-tabs {
+  --ds-tab-text-muted: var(--ds-color-control-ink-muted);
+  --ds-tab-text-active: var(--ds-color-brand-hover);
+  --ds-tab-indicator: var(--ds-color-brand-hover);
+  --ds-tab-bar-border: var(--ds-color-border-default);
+  --ds-tab-pill-track: var(--ds-color-surface-app);
+  --ds-tab-pill-active-bg: var(--ds-color-brand);
+  --ds-tab-pill-active-text: var(--ds-color-on-primary);
+  --ds-tab-pill-hover-text: var(--ds-color-brand);
+  --ds-tab-pill-border: var(--ds-input-border);
+  font-family: var(--ds-typography-font-family);
+}
+
+.ds-tabs--underline {
+  display: flex;
+  border-bottom: 1px solid var(--ds-tab-bar-border);
+}
+
+.ds-tabs__tab--underline {
+  position: relative;
+  padding: 12px 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--ds-tab-text-muted);
+  font-size: var(--ds-typography-body-md-font-size);
+  line-height: var(--ds-typography-body-md-line-height);
+  cursor: pointer;
+}
+
+.ds-tabs__tab--underline[data-active="true"] {
+  color: var(--ds-tab-text-active);
+  font-weight: 500;
+}
+
+.ds-tabs__tab--underline[data-active="true"]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--ds-tab-indicator);
+}
+
+.ds-tabs--segmented {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--ds-tab-pill-track);
+}
+
+.ds-tabs__tab--segmented {
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ds-tab-text-muted);
+  font-size: var(--ds-typography-body-md-font-size);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ds-tabs__tab--segmented[data-active="true"] {
+  background: var(--ds-tab-pill-active-bg);
+  color: var(--ds-tab-pill-active-text);
+  border-color: var(--ds-tab-pill-border);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ds-color-control-ink) 15%, transparent);
+}`;
+
+  if (variant === "Segmented") {
+    const items = labels
+      .map(
+        (label, i) =>
+          `  <button type="button" class="ds-tabs__tab--segmented" data-active="${i === activeIndex ? "true" : "false"}">${showIcon ? `<span class="material-symbols-rounded">${iconName}</span> ` : ""}${label}</button>`,
+      )
+      .join("\n");
+    return {
+      html: `<nav class="ds-tabs ds-tabs--segmented" aria-label="Tabs">\n${items}\n</nav>`,
+      css,
+    };
+  }
+
+  const items = labels
+    .map(
+      (label, i) =>
+        `  <button type="button" class="ds-tabs__tab--underline" data-active="${i === activeIndex ? "true" : "false"}">${showIcon ? `<span class="material-symbols-rounded">${iconName}</span> ` : ""}${label}</button>`,
+    )
+    .join("\n");
+  return {
+    html: `<nav class="ds-tabs ds-tabs--underline" aria-label="Tabs">\n${items}\n</nav>`,
+    css,
+  };
+}
+
+const UNDERLINE_COLOR_DEFS = [
+  {
+    label: "Default (text)",
+    cssVar: "--ds-tab-text-muted",
+    jsonPath: "Text colors.text-secondary",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonTextColor("text-secondary", mode),
+  },
+  {
+    label: "Hover / Press / Selected",
+    cssVar: "--ds-tab-text-active",
+    jsonPath: "Button color.button-hover",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonButtonColor("button-hover", mode),
+  },
+  {
+    label: "Indicator",
+    cssVar: "--ds-tab-indicator",
+    jsonPath: "Button color.button-hover",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonButtonColor("button-hover", mode),
+  },
+] as const;
+
+const SEGMENTED_COLOR_DEFS = [
+  {
+    label: "Default (text)",
+    cssVar: "--ds-tab-text-muted",
+    jsonPath: "Text colors.text-secondary",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonTextColor("text-secondary", mode),
+  },
+  {
+    label: "Hover (text)",
+    cssVar: "--ds-tab-pill-hover-text",
+    jsonPath: "Text colors.text-primary-brand",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonTextColor("text-primary-brand", mode),
+  },
+  {
+    label: "Selected (fill)",
+    cssVar: "--ds-tab-pill-active-bg",
+    jsonPath: "Button color.button-color",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonButtonColor("button-color", mode),
+  },
+  {
+    label: "Border",
+    cssVar: "--ds-tab-pill-border",
+    jsonPath: "Border color.border-primary",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonBorderColor("border-primary", mode),
+  },
+  {
+    label: "Focus ring (outer)",
+    cssVar: "--ds-tab-pill-focus-outer",
+    jsonPath: "Button color.button-press",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonButtonColor("button-press", mode),
+  },
+] as const;
 
 export function TabsView() {
   const { contentPaddingClass } = useControlsPanel();
   const { theme } = useTheme();
-  const tokens = theme === "dark" ? darkTokens : lightTokens;
-
-  const accentBlue = resolveColor(
-    tokens,
-    "global.color.Button color.button-color"
-  );
+  const mode = theme === "dark" ? "dark" : "light";
 
   const [tabVariant, setTabVariant] = useState<TabVariant>("Underline");
   const [tabCount, setTabCount] = useState(3);
@@ -459,6 +429,9 @@ export function TabsView() {
   const [showTabIcon, setShowTabIcon] = useState(false);
   const [tabIconName, setTabIconName] = useState("home");
 
+  const switchOnStyle = { backgroundColor: "var(--ds-color-brand)" } as const;
+  const themeVars = useMemo(() => tabThemeVars(mode), [mode]);
+
   useEffect(() => {
     if (activeTab >= tabCount) setActiveTab(0);
   }, [tabCount, activeTab]);
@@ -466,131 +439,28 @@ export function TabsView() {
   const visibleLabels = tabLabels.slice(0, tabCount);
 
   const stateColors = useMemo(() => {
-    const t = tokens as any;
-    const secondary = resolveColor(
-      t,
-      "global.color.Text colors.text-secondary"
-    );
-    const hover = resolveColor(t, "global.color.Button color.button-hover");
-    const brand = resolveColor(
-      t,
-      "global.color.Text colors.text-primary-brand"
-    );
-    const btn = resolveColor(t, "global.color.Button color.button-color");
-    const border = resolveColor(t, "global.color.Border color.border-primary");
-    const press = resolveColor(t, "global.color.Button color.button-press");
+    const defs =
+      tabVariant === "Segmented" ? SEGMENTED_COLOR_DEFS : UNDERLINE_COLOR_DEFS;
+    return defs.map((d) => ({
+      label: d.label,
+      cssVar: d.cssVar,
+      jsonPath: d.jsonPath,
+      hex: d.resolve(mode),
+    }));
+  }, [mode, tabVariant]);
 
-    if (tabVariant === "Segmented") {
-      return [
-        {
-          label: "Default (text)",
-          hex: secondary,
-          tokenName: "text-secondary",
-        },
-        {
-          label: "Hover (text)",
-          hex: brand,
-          tokenName: "text-primary-brand",
-        },
-        {
-          label: "Selected (fill + shadow)",
-          hex: btn,
-          tokenName: "button-color",
-        },
-        { label: "Border", hex: border, tokenName: "border-primary" },
-        {
-          label: "Focus ring (outer)",
-          hex: press,
-          tokenName: "button-press",
-        },
-      ];
-    }
-
-    return [
-      { label: "Default (text)", hex: secondary, tokenName: "text-secondary" },
-      {
-        label: "Hover / Press / Selected",
-        hex: hover,
-        tokenName: "button-hover",
-      },
-      {
-        label: "Indicator",
-        hex: hover,
-        tokenName: "button-hover",
-      },
-    ];
-  }, [theme, tokens, tabVariant]);
-
-  const codeSnippet = useMemo(() => {
-    if (tabVariant === "Segmented") {
-      const bgPrimary = resolveColor(
-        tokens,
-        "global.color.Background.bg-primary"
-      );
-      const buttonColor = resolveColor(
-        tokens,
-        "global.color.Button color.button-color"
-      );
-      const borderPrimary = resolveColor(
-        tokens,
-        "global.color.Border color.border-primary"
-      );
-      const secondary = resolveColor(
-        tokens,
-        "global.color.Text colors.text-secondary"
-      );
-      const textWhite = resolveColor(
-        tokens,
-        "global.color.Text colors.text-primary-white"
-      );
-
-      const items = visibleLabels
-        .map((label, i) => {
-          const isActive = i === activeTab;
-          const bg = isActive ? buttonColor : "transparent";
-          const color = isActive ? textWhite : secondary;
-          const border = isActive ? `1px solid ${borderPrimary}` : "1px solid transparent";
-          const shadow = isActive ? PILL_SELECTED_SHADOW : "none";
-          const labelInner = showTabIcon
-            ? `<div style="display: flex; align-items: center; gap: ${ICON_LABEL_GAP}px;"><span class="material-symbols-rounded" style="font-size: ${TAB_ICON_SIZE}px; color: ${color}; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;">${tabIconName}</span><span style="font-family: '${FONT_FAMILY}', sans-serif; font-size: ${PILL_FONT_SIZE}px; font-weight: 500; color: ${color};">${label}</span></div>`
-            : `<span style="font-family: '${FONT_FAMILY}', sans-serif; font-size: ${PILL_FONT_SIZE}px; font-weight: 500; color: ${color};">${label}</span>`;
-          return `  <div style="display: flex; align-items: center; justify-content: center; padding: ${PILL_ITEM_PADDING_Y}px ${PILL_ITEM_PADDING_X}px; border-radius: ${PILL_ITEM_RADIUS}px; background: ${bg}; border: ${border}; box-shadow: ${shadow}; cursor: pointer;">
-    ${labelInner}
-  </div>`;
-        })
-        .join("\n");
-
-      return `<div style="display: flex; gap: ${PILL_CONTAINER_GAP}px; align-items: center; padding: ${PILL_CONTAINER_PADDING}px; border-radius: ${PILL_CONTAINER_RADIUS}px; background: ${bgPrimary};">\n${items}\n</div>`;
-    }
-
-    const secondary = resolveColor(
-      tokens,
-      "global.color.Text colors.text-secondary"
-    );
-    const hover = resolveColor(
-      tokens,
-      "global.color.Button color.button-hover"
-    );
-
-    const tabs = visibleLabels
-      .map((label, i) => {
-        const isActive = i === activeTab;
-        const color = isActive ? hover : secondary;
-        const weight = isActive ? 500 : 400;
-        const indicator = isActive
-          ? `\n    <span style="position: absolute; bottom: 0; left: 0; right: 0; height: ${INDICATOR_HEIGHT}px; background: ${hover};"></span>`
-          : "";
-        const labelInner = showTabIcon
-          ? `<div style="display: flex; align-items: center; gap: ${ICON_LABEL_GAP}px;"><span class="material-symbols-rounded" style="font-size: ${TAB_ICON_SIZE}px; color: ${color}; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;">${tabIconName}</span><span style="font-family: '${FONT_FAMILY}', sans-serif; font-size: ${TAB_FONT_SIZE}px; font-weight: ${weight}; line-height: ${TAB_LINE_HEIGHT}px; color: ${color};">${label}</span></div>`
-          : `<span style="font-family: '${FONT_FAMILY}', sans-serif; font-size: ${TAB_FONT_SIZE}px; font-weight: ${weight}; line-height: ${TAB_LINE_HEIGHT}px; color: ${color};">${label}</span>`;
-        return `  <div style="display: flex; align-items: center; justify-content: center; padding: ${TAB_PADDING_TOP}px ${TAB_PADDING_X}px ${TAB_PADDING_BOTTOM}px; position: relative; cursor: pointer;">
-    ${labelInner}${indicator}
-  </div>`;
-      })
-      .join("\n");
-
-    return `<div style="display: flex; border-bottom: 1px solid #e5e7eb;">\n${tabs}\n</div>`;
-  }, [visibleLabels, activeTab, tokens, tabVariant, showTabIcon, tabIconName]);
+  const codeSnippet = useMemo(
+    () =>
+      buildTabsSnippet({
+        variant: tabVariant,
+        labels: visibleLabels,
+        activeIndex: activeTab,
+        showIcon: showTabIcon,
+        iconName: tabIconName,
+        mode,
+      }),
+    [tabVariant, visibleLabels, activeTab, showTabIcon, tabIconName, mode],
+  );
 
   function getTabItemState(index: number): TabState {
     if (index === activeTab) return "Selected";
@@ -599,64 +469,57 @@ export function TabsView() {
   }
 
   return (
-    <div className="flex gap-8">
-      {/* ── Main content ──────────────────────────────────────────────── */}
+    <div className={`${styles.root} flex gap-8`} style={themeVars}>
       <div className={`flex-1 min-w-0 ${contentPaddingClass}`}>
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Tabs
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
-            Explora, entiende y configura el componente tabs del sistema de
-            diseño.
-          </p>
-        </div>
+        <p className={shell.intro}>
+          Explora, entiende y configura el componente tabs del sistema de
+          diseño. Variantes{" "}
+          <strong className="font-medium text-[var(--ds-color-text-primary)]">
+            Underline
+          </strong>{" "}
+          y{" "}
+          <strong className="font-medium text-[var(--ds-color-text-primary)]">
+            Segmented
+          </strong>{" "}
+          (Figma 2:8279). Colores vía{" "}
+          <code className="font-mono text-[length:inherit]">var(--ds-tab-*)</code>
+          .
+        </p>
 
-        {/* ── Preview ─────────────────────────────────────────────────── */}
         <div className="mb-4">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl relative overflow-hidden min-h-[280px]">
-            <div className="absolute left-0 right-0 top-14 h-px bg-gray-200 dark:bg-gray-800" />
-            <div className="absolute top-3 left-0 right-0 flex items-center justify-between pl-5 pr-3 z-10">
-              <h2 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Preview
-              </h2>
+          <div className={`${shell.previewCard} overflow-visible`}>
+            <div className={shell.previewDivider} />
+            <div className={shell.previewToolbar}>
+              <h2 className={shell.previewTitle}>Preview</h2>
               <button
+                type="button"
                 onClick={() => setShowCodeModal(true)}
-                className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all overflow-clip shadow-[inset_0px_0px_0px_1px_rgba(1,17,31,0.1),inset_0px_-2px_2px_0px_rgba(1,17,31,0.1)]"
+                className={shell.codeButton}
                 title="View Code"
               >
                 <CodeXml className="w-5 h-5" />
               </button>
             </div>
-            <div className="absolute left-0 right-0 top-16 bottom-0 flex items-center justify-center">
+            <div className={shell.previewStage}>
               {tabVariant === "Underline" ? (
-                <div
-                  style={{
-                    display: "flex",
-                    borderBottom: "1px solid",
-                    borderColor: theme === "dark" ? "#374151" : "#e5e7eb",
-                  }}
-                >
+                <nav className={styles.underlineBar} aria-label="Tabs preview">
                   {visibleLabels.map((label, i) => (
                     <TabItemPreview
-                      key={i}
+                      key={label}
                       label={label}
                       state={getTabItemState(i)}
                       isActive={i === activeTab}
-                      tokens={tokens}
                       iconName={showTabIcon ? tabIconName : null}
                       onClick={() => setActiveTab(i)}
                       onMouseEnter={() => setHoveredTab(i)}
                       onMouseLeave={() => setHoveredTab(null)}
                     />
                   ))}
-                </div>
+                </nav>
               ) : (
                 <PillTabBar
                   labels={visibleLabels}
                   activeIndex={activeTab}
-                  tokens={tokens}
                   iconName={showTabIcon ? tabIconName : null}
                   onSelect={setActiveTab}
                 />
@@ -665,178 +528,168 @@ export function TabsView() {
           </div>
         </div>
 
-        {/* ── Component Spec ──────────────────────────────────────────── */}
         <div className="flex flex-col gap-4">
-          {/* Typography */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Typography
-            </h3>
-            <div className="space-y-0 divide-y divide-gray-100 dark:divide-gray-800">
-              <SpecRow label="Font family" value={FONT_FAMILY} />
+          <div className={shell.specCard}>
+            <h3 className={shell.specHeading}>Typography</h3>
+            <div className={shell.specDivider}>
+              <SpecRow
+                label="Font family"
+                value="var(--ds-typography-font-family)"
+              />
               <SpecRow
                 label="Font size"
+                value="var(--ds-typography-body-md-font-size)"
+              />
+              <SpecRow
+                label="Weight"
                 value={
-                  tabVariant === "Segmented"
-                    ? `${PILL_FONT_SIZE}px`
-                    : `${TAB_FONT_SIZE}px`
+                  tabVariant === "Underline"
+                    ? "400 default / 500 active"
+                    : "500 (Medium)"
                 }
               />
-              {tabVariant === "Underline" ? (
-                <>
-                  <SpecRow label="Weight (default)" value="400 (Regular)" />
-                  <SpecRow label="Weight (active)" value="500 (Medium)" />
-                  <SpecRow
-                    label="Line height"
-                    value={`${TAB_LINE_HEIGHT}px`}
-                  />
-                </>
-              ) : (
-                <>
-                  <SpecRow label="Weight" value="500 (Medium)" />
-                  <SpecRow label="Line height" value="normal" />
-                </>
-              )}
-              <SpecRow label="Letter spacing" value="0" />
+              <SpecRow
+                label="Line height"
+                value={
+                  tabVariant === "Underline"
+                    ? "var(--ds-typography-body-md-line-height)"
+                    : "normal"
+                }
+              />
             </div>
           </div>
 
-          {/* Tab Item Structure */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Tab Item Structure
+          <div className={shell.specCard}>
+            <h3 className={shell.specHeading}>
+              {tabVariant === "Underline"
+                ? "Underline structure"
+                : "Segmented structure"}
             </h3>
-            <div className="space-y-0 divide-y divide-gray-100 dark:divide-gray-800">
+            <div className={shell.specDivider}>
               {tabVariant === "Underline" ? (
                 <>
+                  <SpecRow label="Padding X" value="var(--ds-tab-padding-x)" />
                   <SpecRow
-                    label="Padding X"
-                    value={`${TAB_PADDING_X}px`}
+                    label="Padding top / bottom"
+                    value="var(--ds-tab-padding-top) / var(--ds-tab-padding-bottom)"
                   />
                   <SpecRow
-                    label="Padding top"
-                    value={`${TAB_PADDING_TOP}px`}
-                  />
-                  <SpecRow
-                    label="Padding bottom"
-                    value={`${TAB_PADDING_BOTTOM}px`}
-                  />
-                  <SpecRow
-                    label={showTabIcon ? "Icon ↔ label gap" : "Gap (icon ↔ text)"}
+                    label={showTabIcon ? "Icon gap" : "Item gap"}
                     value={
-                      showTabIcon ? `${ICON_LABEL_GAP}px` : `${TAB_GAP}px`
+                      showTabIcon
+                        ? "var(--ds-tab-icon-gap)"
+                        : "var(--ds-tab-gap)"
                     }
                   />
                   <SpecRow
-                    label="Indicator height"
-                    value={`${INDICATOR_HEIGHT}px`}
+                    label="Indicator"
+                    value="var(--ds-tab-indicator-h)"
                   />
-                  <SpecRow label="Indicator position" value="Bottom" />
                 </>
               ) : (
                 <>
                   <SpecRow
                     label="Container padding"
-                    value={`${PILL_CONTAINER_PADDING}px`}
+                    value="var(--ds-tab-pill-container-p)"
                   />
                   <SpecRow
                     label="Container gap"
-                    value={`${PILL_CONTAINER_GAP}px`}
+                    value="var(--ds-tab-pill-container-gap)"
                   />
                   <SpecRow
                     label="Container radius"
-                    value={`${PILL_CONTAINER_RADIUS}px`}
+                    value="var(--ds-tab-pill-container-radius)"
                   />
                   <SpecRow
-                    label="Tab padding X / Y"
-                    value={`${PILL_ITEM_PADDING_X}px / ${PILL_ITEM_PADDING_Y}px`}
+                    label="Tab padding"
+                    value="var(--ds-tab-pill-item-py) var(--ds-tab-pill-item-px)"
                   />
                   <SpecRow
-                    label="Tab border radius"
-                    value={`${PILL_ITEM_RADIUS}px`}
+                    label="Tab radius"
+                    value="var(--ds-tab-pill-item-radius)"
                   />
-                  <SpecRow label="Selected shadow" value={PILL_SELECTED_SHADOW} />
-                  {showTabIcon && (
-                    <SpecRow
-                      label="Icon ↔ label gap"
-                      value={`${ICON_LABEL_GAP}px`}
-                    />
-                  )}
                 </>
               )}
             </div>
           </div>
 
-          {/* Colors (States) */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Colors (States)
+          <div className={shell.specCard}>
+            <h3 className={shell.specHeading}>
+              Colors — {tabVariant}
             </h3>
-            <div className="space-y-1 divide-y divide-gray-100 dark:divide-gray-800">
+            <div className={shell.specDivider}>
               {stateColors.map((sc) => (
                 <StateColorCard key={sc.label} {...sc} />
               ))}
             </div>
           </div>
 
-          {/* All States Gallery */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              All States
-            </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+          <div className={shell.specCard}>
+            <h3 className={shell.specHeading}>All states</h3>
+            <p className="mb-4 text-sm text-[var(--ds-color-text-muted)]">
               Underline (Figma 20:7158)
             </p>
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              {(
-                ["Default", "Hover", "Press", "Selected"] as TabState[]
-              ).map((state) => (
-                <div key={state} className="space-y-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
-                    {state}
-                  </p>
-                  <div
-                    style={{
-                      display: "inline-flex",
-                      borderBottom: "1px solid",
-                      borderColor:
-                        theme === "dark" ? "#374151" : "#e5e7eb",
-                    }}
-                  >
-                    <TabItemPreview
-                      label="Active"
-                      state={state}
-                      isActive={
-                        state === "Selected" || state === "Press"
-                      }
-                      tokens={tokens}
-                    />
+            <div className="mb-8 grid grid-cols-2 gap-6">
+              {(["Default", "Hover", "Press", "Selected"] as TabState[]).map(
+                (state) => (
+                  <div key={state} className="space-y-3">
+                    <p className={styles.stateGalleryLabel}>{state}</p>
+                    <nav className={styles.underlineBar}>
+                      <TabItemPreview
+                        label="Active"
+                        state={state}
+                        isActive={
+                          state === "Selected" || state === "Press"
+                        }
+                      />
+                    </nav>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-              Segmented — Component 120 (Figma 71:1612)
+            <p className="mb-4 text-sm text-[var(--ds-color-text-muted)]">
+              Segmented (Figma 71:1612)
             </p>
             <div className="grid grid-cols-2 gap-6">
               {(
                 [
-                  { key: "default", label: "Default", active: false, hover: false, focus: false },
-                  { key: "hover", label: "Hover", active: false, hover: true, focus: false },
-                  { key: "focus", label: "Focused", active: false, hover: false, focus: true },
-                  { key: "selected", label: "Selected", active: true, hover: false, focus: false },
+                  {
+                    key: "default",
+                    label: "Default",
+                    active: false,
+                    hover: false,
+                    focus: false,
+                  },
+                  {
+                    key: "hover",
+                    label: "Hover",
+                    active: false,
+                    hover: true,
+                    focus: false,
+                  },
+                  {
+                    key: "focus",
+                    label: "Focused",
+                    active: false,
+                    hover: false,
+                    focus: true,
+                  },
+                  {
+                    key: "selected",
+                    label: "Selected",
+                    active: true,
+                    hover: false,
+                    focus: false,
+                  },
                 ] as const
               ).map((row) => (
                 <div key={row.key} className="space-y-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
-                    {row.label}
-                  </p>
+                  <p className={styles.stateGalleryLabel}>{row.label}</p>
                   <PillTabItemPreview
                     label="Tab"
                     isActive={row.active}
                     isHovered={row.hover}
                     isFocused={row.focus}
-                    tokens={tokens}
                   />
                 </div>
               ))}
@@ -845,19 +698,14 @@ export function TabsView() {
         </div>
       </div>
 
-      {/* ── Right Panel (Control Panel) ───────────────────────────────── */}
       <ControlsPanelFrame>
         <div className="p-6 space-y-6">
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-              Controls
-            </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Configure the tabs properties
-            </p>
+            <h2 className={shell.panelTitle}>Controls</h2>
+            <p className={shell.panelHint}>Configure the tabs properties</p>
           </div>
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={shell.panelDivider} />
 
           <SegmentedControl
             label="Variant"
@@ -869,9 +717,8 @@ export function TabsView() {
             onChange={setTabVariant}
           />
 
-          {/* Number of tabs */}
           <SegmentedControl
-            label="Tab Count"
+            label="Tab count"
             value={String(tabCount)}
             options={[
               { value: "2", label: "2" },
@@ -882,9 +729,8 @@ export function TabsView() {
             onChange={(v) => setTabCount(Number(v))}
           />
 
-          {/* Active tab */}
           <SegmentedControl
-            label="Active Tab"
+            label="Active tab"
             value={String(activeTab)}
             options={visibleLabels.map((_, i) => ({
               value: String(i),
@@ -893,20 +739,16 @@ export function TabsView() {
             onChange={(v) => setActiveTab(Number(v))}
           />
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={shell.panelDivider} />
 
           <div>
             <label className="flex items-center justify-between gap-4">
-              <span className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Icon
-              </span>
+              <span className={shell.panelLabel}>Icon</span>
               <Switch
                 checked={showTabIcon}
-                onCheckedChange={(v) => setShowTabIcon(v)}
+                onCheckedChange={setShowTabIcon}
                 aria-label="Mostrar icono a la izquierda"
-                style={
-                  showTabIcon ? { backgroundColor: accentBlue } : undefined
-                }
+                style={showTabIcon ? switchOnStyle : undefined}
               />
             </label>
           </div>
@@ -923,13 +765,12 @@ export function TabsView() {
             />
           )}
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={shell.panelDivider} />
 
-          {/* Label text inputs */}
           {visibleLabels.map((label, i) => (
-            <div key={i}>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
-                Tab {i + 1} Label
+            <div key={label}>
+              <label className={`${shell.panelLabel} block mb-1.5`}>
+                Tab {i + 1} label
               </label>
               <input
                 type="text"
@@ -941,67 +782,36 @@ export function TabsView() {
                     return next;
                   });
                 }}
-                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={shell.panelInput}
               />
             </div>
           ))}
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={shell.panelDivider} />
 
-          {/* Quick reference */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              Current Config
+            <label className={`${shell.panelLabel} block mb-2`}>
+              Current config
             </label>
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 space-y-1.5">
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">
-                  Variant
-                </span>
-                <span className="text-gray-900 dark:text-white font-medium">
-                  {tabVariant}
-                </span>
+            <div className={shell.configBox}>
+              <div className={shell.configRow}>
+                <span className={shell.configKey}>Variant</span>
+                <span className={shell.configVal}>{tabVariant}</span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">
-                  Tab count
-                </span>
-                <span className="text-gray-900 dark:text-white font-medium">
-                  {tabCount}
-                </span>
+              <div className={shell.configRow}>
+                <span className={shell.configKey}>Tabs</span>
+                <span className={shell.configVal}>{tabCount}</span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">
-                  Active tab
-                </span>
-                <span className="text-gray-900 dark:text-white font-medium">
-                  #{activeTab + 1}
-                </span>
+              <div className={shell.configRow}>
+                <span className={shell.configKey}>Active</span>
+                <span className={shell.configVal}>#{activeTab + 1}</span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">Icon</span>
-                <span className="text-gray-900 dark:text-white font-medium">
+              <div className={shell.configRow}>
+                <span className={shell.configKey}>Icon</span>
+                <span className={shell.configVal}>
                   {showTabIcon ? tabIconName : "—"}
                 </span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">
-                  Font size
-                </span>
-                <span className="text-gray-900 dark:text-white font-mono">
-                  {`${tabVariant === "Segmented" ? PILL_FONT_SIZE : TAB_FONT_SIZE}px`}
-                </span>
-              </div>
-              {tabVariant === "Underline" && (
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Indicator
-                  </span>
-                  <span className="text-gray-900 dark:text-white font-mono">
-                    {INDICATOR_HEIGHT}px
-                  </span>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -1010,8 +820,9 @@ export function TabsView() {
       {showCodeModal && (
         <CodeModal
           onClose={() => setShowCodeModal(false)}
-          title={`Tabs — ${tabVariant} / ${tabCount} tabs / Active #${activeTab + 1}`}
-          code={codeSnippet}
+          title={`Tabs — ${tabVariant} / ${tabCount} tabs / #${activeTab + 1}`}
+          html={codeSnippet.html}
+          css={codeSnippet.css}
         />
       )}
     </div>

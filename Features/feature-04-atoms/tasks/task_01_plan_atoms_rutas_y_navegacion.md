@@ -5,20 +5,21 @@
 
 ## Objetivo
 
-Cerrar el mapa **inventario §2 del charter** ↔ **código actual** (`routes.tsx`, `nav/categories.ts`, vistas `*-view.tsx`): definir rutas nuevas, orden del sidenav Atoms y decisiones de fusión (ej. Search como subsección de Inputs vs vista propia).
-
-## Entregables
-
-1. Tabla actualizada en el charter o en este archivo con **path + estado** por átomo.
-2. Cambios mínimos en `NAV_CATEGORIES` y `routes.tsx` solo donde la task lo exija (placeholders opcionales).
-3. Convención de nombres de ruta (`/atoms/...`) alineada a `Spec/arquitectura-visual-ui.md`.
+Definir el mapa **un átomo → una ruta → una entrada en sidenav** para las tasks `task_02` … `task_23`, sin agrupar módulos. Actualizar `desarrollo-listo/src/app/nav/categories.ts` y `routes.tsx` solo donde haga falta (placeholders para átomos aún no implementados).
 
 ## Reglas
 
-- No duplicar vistas entre Atoms y Molecules (Dropdown: acordar si el átomo es solo “trigger + item” y la molécula compone el panel completo).
-- **Fuente Figma:** cuando exista frame por átomo, preparar URL + `nodeId` para tasks posteriores (MCP obligatorio según `@Agents/metodologia-sdd`).
+- Cada átomo del charter §2 tiene su propia task; **no** crear tasks multi-átomo.
+- Rutas bajo `/atoms/...` salvo decisión explícita documentada en este informe.
+- Coordinar Drop input / Drop items con Molecules (`/molecules/dropdowns`) sin duplicar responsabilidades.
+
+## Entregables
+
+1. Tabla en el charter o en `Ejecuciones/` con **path + vista + estado** por átomo (existente / pendiente / revisión).
+2. PR o cambios mínimos en navegación para átomos nuevos (Dividers, Progress, Search, etc.).
+3. Lista de vistas en modo **revisión** vs **implementar** (ya reflejada en charter §2).
 
 ## DoD
 
-- [ ] Inventario §2 del charter refleja el estado real del repo (✓ existente / pendiente / fusionado).
-- [ ] Sin rutas rotas; build y tests en verde tras cambios de navegación.
+- [x] Las 22 tasks de átomos (02–23) tienen ruta prevista o existente documentada (`atom-catalog-routes.ts` + informe `Ejecuciones/ejecucion_feature_04_task_01_plan_rutas_2026-05-14.md`).
+- [x] Sin rutas rotas; `npm run test` y `npm run build` en verde tras cambios de navegación.

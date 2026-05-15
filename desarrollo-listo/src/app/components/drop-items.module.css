@@ -1,0 +1,128 @@
+/**
+ * Drop items (Figma 3:25753) — ítems de lista desplegable / menú.
+ */
+
+.root {
+  --ds-drop-item-min-width: 320px;
+  --ds-drop-item-radius: 6px;
+  --ds-drop-item-py: 12px;
+  --ds-drop-item-px: 16px;
+  --ds-drop-item-gap: 8px;
+  --ds-drop-item-icon: 24px;
+  --ds-drop-item-avatar: 32px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-drop-item-gap);
+  width: 100%;
+  min-width: var(--ds-drop-item-min-width);
+  max-width: var(--ds-drop-item-min-width);
+  padding: var(--ds-drop-item-py) var(--ds-drop-item-px);
+  box-sizing: border-box;
+  border: none;
+  border-radius: var(--ds-drop-item-radius);
+  background: transparent;
+  cursor: default;
+  font-family: var(--ds-typography-font-family);
+  text-align: left;
+  color: inherit;
+}
+
+.row[data-interactive="true"] {
+  cursor: pointer;
+}
+
+.row[data-selected="true"] {
+  background: var(--ds-drop-item-bg-selected);
+}
+
+.textBlock {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  font-size: var(--ds-typography-body-sm-font-size, 14px);
+  line-height: 20px;
+}
+
+.label {
+  font-weight: 500;
+  width: 100%;
+  color: var(--ds-drop-item-label);
+}
+
+.subtitle {
+  font-weight: 400;
+  width: 100%;
+  color: var(--ds-drop-item-subtitle);
+}
+
+.leadingIcon {
+  flex-shrink: 0;
+  font-size: var(--ds-drop-item-icon);
+  width: var(--ds-drop-item-icon);
+  height: var(--ds-drop-item-icon);
+  line-height: var(--ds-drop-item-icon);
+  color: var(--ds-drop-item-icon-ink);
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: var(--ds-drop-item-avatar);
+  height: var(--ds-drop-item-avatar);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-drop-item-avatar-bg);
+  color: var(--ds-drop-item-icon-ink);
+  overflow: hidden;
+}
+
+.avatar .material {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.material {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Gallery — matriz Figma */
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem 0.75rem;
+  width: 100%;
+  max-width: calc(3 * var(--ds-drop-item-min-width) + 2 * 12px);
+}
+
+.matrixCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.matrixLabel {
+  font-size: var(--ds-typography-body-xs-font-size);
+  font-weight: 500;
+  color: var(--ds-color-control-ink-muted);
+  font-family: var(--ds-typography-font-family);
+}
+
+.stateStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: var(--ds-drop-item-min-width);
+}

@@ -1,0 +1,161 @@
+/**
+ * Search (Figma 241:123115) — campo con icono search y clear.
+ */
+
+.root {
+  --ds-search-min-width: 320px;
+  --ds-search-width: 320px;
+  --ds-search-radius: 8px;
+  --ds-search-padding-y: 14px;
+  --ds-search-padding-left: 12px;
+  --ds-search-padding-right: 14px;
+  --ds-search-icon-gap: 8px;
+  --ds-search-border-w: 1px;
+  --ds-search-current-border: var(--ds-input-border);
+  --ds-search-preview-width: var(--ds-search-width);
+}
+
+.previewWrap {
+  width: 100%;
+  max-width: var(--ds-search-preview-width);
+  min-width: var(--ds-search-min-width);
+  box-sizing: border-box;
+}
+
+.field {
+  --ds-search-current-border: var(--ds-input-border);
+  --ds-search-border-w: 1px;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-search-icon-gap);
+  width: 100%;
+  max-width: var(--ds-search-width);
+  min-width: var(--ds-search-min-width);
+  box-sizing: border-box;
+  padding: var(--ds-search-padding-y) var(--ds-search-padding-right)
+    var(--ds-search-padding-y) var(--ds-search-padding-left);
+  border-radius: var(--ds-search-radius);
+  border: var(--ds-search-border-w) solid var(--ds-search-current-border);
+  background: transparent;
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  line-height: var(--ds-typography-body-md-line-height);
+  transition:
+    border-color 0.15s ease,
+    border-width 0.15s ease;
+}
+
+.field[data-state="focused"] {
+  --ds-search-current-border: var(--ds-input-border-focus);
+  --ds-search-border-w: 2px;
+}
+
+.field[data-state="disabled"] {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.field:not([data-state="disabled"]) {
+  cursor: text;
+}
+
+.materialIcon {
+  flex-shrink: 0;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.field[data-state="default"] .materialIcon {
+  color: var(--ds-color-control-ink-muted);
+}
+
+.field[data-state="focused"] .materialIcon,
+.field[data-state="filled"] .materialIcon,
+.field[data-state="default"][data-has-value="true"] .materialIcon {
+  color: var(--ds-color-control-ink);
+}
+
+.field[data-state="disabled"] .materialIcon {
+  color: var(--ds-input-text-disabled);
+}
+
+.nativeInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: 400;
+}
+
+.field[data-state="default"]:not([data-has-value="true"]) .nativeInput {
+  color: var(--ds-color-control-ink-muted);
+}
+
+.field[data-state="default"][data-has-value="true"] .nativeInput,
+.field[data-state="focused"] .nativeInput,
+.field[data-state="filled"] .nativeInput {
+  color: var(--ds-color-control-ink);
+}
+
+.field[data-state="disabled"] .nativeInput {
+  color: var(--ds-input-text-disabled);
+  cursor: not-allowed;
+}
+
+.field[data-state="disabled"] .nativeInput::placeholder {
+  color: var(--ds-input-text-disabled);
+}
+
+/* Evitar el clear nativo del navegador en inputs search */
+.nativeInput::-webkit-search-cancel-button,
+.nativeInput::-webkit-search-decoration,
+.nativeInput::-webkit-search-results-button {
+  display: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.clearBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ds-color-control-ink-muted);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.clearBtn:hover {
+  color: var(--ds-color-control-ink);
+}
+
+.clearBtn:focus-visible {
+  outline: 2px solid var(--ds-input-border-focus);
+  outline-offset: 2px;
+}
+
+.clearIcon {
+  flex-shrink: 0;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 20;
+  color: inherit;
+}
+

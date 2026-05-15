@@ -1,0 +1,237 @@
+/**
+ * Drop input (Figma 2:8532) — select / dropdown trigger.
+ */
+
+.root {
+  --ds-drop-min-width: 320px;
+  --ds-drop-width: 320px;
+  --ds-drop-radius: 8px;
+  --ds-drop-py: 14px;
+  --ds-drop-pl: 12px;
+  --ds-drop-pr: 14px;
+  --ds-drop-gap-inner: 8px;
+  --ds-drop-gap-chevron: 14px;
+  --ds-drop-icon: 24px;
+  --ds-drop-avatar: 32px;
+  --ds-drop-person-h: 52px;
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  min-width: var(--ds-drop-min-width);
+  max-width: var(--ds-drop-width);
+}
+
+.field {
+  --ds-drop-border-w: 1px;
+  --ds-drop-border-color: var(--ds-input-border);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-drop-gap-chevron);
+  width: 100%;
+  min-height: 0;
+  padding: var(--ds-drop-py) var(--ds-drop-pr) var(--ds-drop-py)
+    var(--ds-drop-pl);
+  box-sizing: border-box;
+  border-radius: var(--ds-drop-radius);
+  border: var(--ds-drop-border-w) solid var(--ds-drop-border-color);
+  background: var(--ds-drop-bg);
+  cursor: default;
+  font-family: var(--ds-typography-font-family);
+  text-align: left;
+}
+
+.field[data-interactive="true"]:not([data-state="Disabled"]) {
+  cursor: pointer;
+}
+
+.field[data-type="person"] {
+  min-height: var(--ds-drop-person-h);
+}
+
+.field[data-state="Focused"],
+.field[data-state="Error"] {
+  --ds-drop-border-w: 2px;
+}
+
+.field[data-state="Disabled"] {
+  cursor: not-allowed;
+  opacity: 0.92;
+}
+
+.row {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--ds-drop-gap-inner);
+  min-width: 0;
+}
+
+.leadingIcon {
+  flex-shrink: 0;
+  font-size: var(--ds-drop-icon);
+  width: var(--ds-drop-icon);
+  height: var(--ds-drop-icon);
+  line-height: var(--ds-drop-icon);
+  color: var(--ds-drop-leading-icon);
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: var(--ds-drop-avatar);
+  height: var(--ds-drop-avatar);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-drop-avatar-bg);
+  color: var(--ds-drop-avatar-ink);
+}
+
+.avatar .material {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.avatarSm {
+  flex-shrink: 0;
+  width: var(--ds-drop-icon);
+  height: var(--ds-drop-icon);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ds-drop-avatar-bg);
+  color: var(--ds-drop-avatar-ink);
+}
+
+.avatarSm .material {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+.value {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--ds-drop-value);
+}
+
+.field[data-state="Default"] .value[data-tone="placeholder"] {
+  color: var(--ds-drop-placeholder);
+}
+
+.field[data-type="input"][data-state="Default"] .value[data-tone="placeholder"] {
+  color: var(--ds-drop-secondary);
+}
+
+.chevron {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-drop-icon);
+  height: var(--ds-drop-icon);
+  color: var(--ds-drop-chevron);
+}
+
+.chevron .material {
+  font-size: var(--ds-drop-icon);
+  width: var(--ds-drop-icon);
+  height: var(--ds-drop-icon);
+  line-height: var(--ds-drop-icon);
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Floating label (Input text) */
+.floatWrap {
+  position: absolute;
+  left: 10px;
+  top: -8px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+  background: var(--ds-drop-bg);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.floatText {
+  color: var(--ds-drop-float-label);
+}
+
+.field[data-state="Error"] .floatText {
+  color: var(--ds-drop-error-text);
+}
+
+.required {
+  color: var(--ds-drop-required);
+}
+
+.field[data-state="Disabled"] .floatText,
+.field[data-state="Disabled"] .required {
+  color: var(--ds-drop-disabled-text);
+}
+
+.subtitle {
+  padding: 0 4px 0 8px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--ds-drop-subtitle);
+}
+
+.subtitle[data-tone="error"] {
+  color: var(--ds-drop-error-text);
+}
+
+.field[data-type="input"] {
+  padding-top: calc(var(--ds-drop-py) + 4px);
+}
+
+/* Matrix gallery */
+
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem 0.75rem;
+  width: 100%;
+  max-width: calc(3 * var(--ds-drop-min-width) + 2 * 12px);
+}
+
+.matrixCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.matrixLabel {
+  font-size: var(--ds-typography-body-xs-font-size);
+  font-weight: 500;
+  color: var(--ds-color-control-ink-muted);
+  font-family: var(--ds-typography-font-family);
+}
+
+.stateStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-start;
+}

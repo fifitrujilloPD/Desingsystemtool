@@ -1,69 +1,65 @@
 import { useState, useMemo, useEffect } from "react";
-import { useTheme } from "./theme-provider";
 import { CodeXml } from "lucide-react";
 import { SegmentedControl } from "./design-system-controls";
 import { Switch } from "./ui/switch";
-import lightTokens from "../../imports/Ligth_mode.tokens-3.json";
-import darkTokens from "../../imports/darkmode.tokens-3.json";
 import { CodeModal } from "./code-modal";
 import { useControlsPanel } from "./controls-panel-context";
 import { ControlsPanelFrame } from "./controls-panel-frame";
-
-// ─── Types ──────────────────────────────────────────────────────────────────
+import { useTheme } from "./theme-provider";
+import {
+  resolveJsonButtonColor,
+  resolveJsonTextColor,
+} from "../utils/token-parser";
+import styles from "./radio-button.module.css";
 
 type RadioState = "Enabled" | "Hover" | "Focus" | "Pressed" | "Disabled";
 
-// ─── Token helpers ──────────────────────────────────────────────────────────
+const RADIO_STATE_ATTR: Record<RadioState, string> = {
+  Enabled: "enabled",
+  Hover: "hover",
+  Focus: "focus",
+  Pressed: "pressed",
+  Disabled: "disabled",
+};
 
-function resolveRef(ref: string, root: any): string | null {
-  const path = ref.replace(/[{}]/g, "").split(".");
-  let current = root;
-  for (const p of path) {
-    current = current?.[p];
-    if (!current) return null;
-  }
-  return current?.$value?.hex || null;
-}
-
-function resolveColor(tokens: any, path: string): string {
-  const parts = path.split(".");
-  let current = tokens;
-  for (const p of parts) current = current?.[p];
-  const val = current?.$value;
-  if (!val) return "#000";
-  if (typeof val === "string" && val.startsWith("{"))
-    return resolveRef(val, tokens) || "#000";
-  return val?.hex || "#000";
-}
-
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-// ─── Constants from Figma tokens ────────────────────────────────────────────
-
-const FONT_FAMILY =
-  (lightTokens as any)?.global?.typography?.fontFamily?.Primary?.$value ||
-  "Roboto";
-
-const RADIO_OUTER_SIZE = 20;
-const RADIO_INNER_DOT = 10;
-const RADIO_BORDER_WIDTH = 2;
-const RADIO_TOUCH_TARGET = 48;
-const STATE_LAYER_SIZE = 40;
-const LABEL_FONT_SIZE = 16;
-const LABEL_GAP = 6;
-
-// ─── RadioButtonPreview ─────────────────────────────────────────────────────
+const RADIO_COLOR_DEFS = [
+  {
+    label: "Selected",
+    cssVar: "--ds-color-brand",
+    jsonPath: "Button color.button-color",
+    resolve: (mode: "light" | "dark") => resolveJsonButtonColor("button-color", mode),
+  },
+  {
+    label: "Unselected",
+    cssVar: "--ds-color-control-ink",
+    jsonPath: "Text colors.text-primary",
+    resolve: (mode: "light" | "dark") => resolveJsonTextColor("text-primary", mode),
+  },
+  {
+    label: "Hover (selected)",
+    cssVar: "--ds-color-brand-hover",
+    jsonPath: "Button color.button-hover",
+    resolve: (mode: "light" | "dark") => resolveJsonButtonColor("button-hover", mode),
+  },
+  {
+    label: "Focus ring",
+    cssVar: "--ds-color-brand",
+    jsonPath: "Button color.button-color",
+    resolve: (mode: "light" | "dark") => resolveJsonButtonColor("button-color", mode),
+  },
+  {
+    label: "Label disabled",
+    cssVar: "--ds-color-control-ink-muted",
+    jsonPath: "Text colors.text-secondary",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonTextColor("text-secondary", mode),
+  },
+] as const;
 
 function RadioButtonPreview({
   radioState,
   isSelected,
   labelText,
-  tokens,
   onMouseEnter,
   onMouseLeave,
   onMouseDown,
@@ -72,169 +68,212 @@ function RadioButtonPreview({
   radioState: RadioState;
   isSelected: boolean;
   labelText: string;
-  tokens: any;
-  onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
-  onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
-  onMouseDown?: React.MouseEventHandler<HTMLDivElement>;
-  onMouseUp?: React.MouseEventHandler<HTMLDivElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLLabelElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLLabelElement>;
+  onMouseDown?: React.MouseEventHandler<HTMLLabelElement>;
+  onMouseUp?: React.MouseEventHandler<HTMLLabelElement>;
 }) {
-  const brandColor = resolveColor(
-    tokens,
-    "global.color.Button color.button-color"
-  );
-  const onSurface = resolveColor(
-    tokens,
-    "global.color.Text colors.text-primary"
-  );
-  const textSecondary = resolveColor(
-    tokens,
-    "global.color.Text colors.text-secondary"
-  );
   const isDisabled = radioState === "Disabled";
-
-  const circleColor = isSelected ? brandColor : onSurface;
-
-  let stateLayerBg = "transparent";
-  if (!isDisabled) {
-    const baseColor = isSelected ? brandColor : onSurface;
-    if (radioState === "Hover") stateLayerBg = hexToRgba(baseColor, 0.08);
-    if (radioState === "Focus") stateLayerBg = hexToRgba(baseColor, 0.12);
-    if (radioState === "Pressed") stateLayerBg = hexToRgba(baseColor, 0.12);
-  }
-
-  const containerStyle: React.CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: LABEL_GAP,
-    cursor: isDisabled ? "not-allowed" : "pointer",
-    opacity: isDisabled ? 0.38 : 1,
-  };
-
-  const touchTargetStyle: React.CSSProperties = {
-    width: RADIO_TOUCH_TARGET,
-    height: RADIO_TOUCH_TARGET,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  };
-
-  const stateLayerStyle: React.CSSProperties = {
-    width: STATE_LAYER_SIZE,
-    height: STATE_LAYER_SIZE,
-    borderRadius: "50%",
-    backgroundColor: stateLayerBg,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "background-color 0.15s ease",
-  };
-
-  const outerCircleStyle: React.CSSProperties = {
-    width: RADIO_OUTER_SIZE,
-    height: RADIO_OUTER_SIZE,
-    borderRadius: "50%",
-    border: `${RADIO_BORDER_WIDTH}px solid ${circleColor}`,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "border-color 0.15s ease",
-    boxSizing: "border-box",
-  };
-
-  const innerDotStyle: React.CSSProperties = {
-    width: RADIO_INNER_DOT,
-    height: RADIO_INNER_DOT,
-    borderRadius: "50%",
-    backgroundColor: circleColor,
-    transform: isSelected ? "scale(1)" : "scale(0)",
-    transition: "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontFamily: `'${FONT_FAMILY}', sans-serif`,
-    fontSize: LABEL_FONT_SIZE,
-    fontWeight: 400,
-    lineHeight: "1.5",
-    color: isDisabled ? textSecondary : onSurface,
-  };
+  const stateAttr =
+    radioState === "Enabled" ? "enabled" : RADIO_STATE_ATTR[radioState];
 
   return (
-    <div
-      style={containerStyle}
+    <label
+      className={styles.radio}
+      data-selected={isSelected ? "true" : "false"}
+      data-state={stateAttr}
+      data-disabled={isDisabled ? "true" : "false"}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
     >
-      <div style={touchTargetStyle}>
-        <div style={stateLayerStyle}>
-          <div style={outerCircleStyle}>
-            <div style={innerDotStyle} />
-          </div>
-        </div>
-      </div>
-      {labelText && <span style={labelStyle}>{labelText}</span>}
-    </div>
+      <span className={styles.touchTarget}>
+        <span className={styles.stateLayer}>
+          <span className={styles.outer}>
+            <span className={styles.inner} />
+          </span>
+        </span>
+      </span>
+      {labelText ? <span className={styles.label}>{labelText}</span> : null}
+    </label>
   );
 }
-
-// ─── State color card ───────────────────────────────────────────────────────
 
 function StateColorCard({
   label,
   hex,
-  tokenName,
+  cssVar,
+  jsonPath,
 }: {
   label: string;
   hex: string;
-  tokenName: string;
+  cssVar: string;
+  jsonPath: string;
 }) {
   return (
-    <div className="flex items-center gap-3 py-2">
+    <div className={styles.tokenRow}>
       <div
-        className="w-8 h-8 rounded-md border border-gray-200 dark:border-gray-700 shrink-0"
-        style={{ backgroundColor: hex }}
+        className={styles.tokenSwatch}
+        style={{ backgroundColor: `var(${cssVar})` }}
+        title={hex}
       />
       <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-white">
-          {label}
+        <p className={styles.tokenTitle}>{label}</p>
+        <p className={styles.tokenMeta}>
+          var({cssVar}) · JSON {jsonPath}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono truncate">
-          {tokenName}
-        </p>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500 font-mono">
-          {hex}
-        </p>
+        <p className={styles.tokenHex}>{hex}</p>
       </div>
     </div>
   );
 }
 
-// ─── Spec row ───────────────────────────────────────────────────────────────
-
 function SpecRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between py-1.5">
-      <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
-      <span className="text-sm font-mono text-gray-900 dark:text-white">
-        {value}
-      </span>
+    <div className={styles.specRow}>
+      <span className={styles.specLabel}>{label}</span>
+      <span className={styles.specValue}>{value}</span>
     </div>
   );
 }
 
-// ─── Main view ──────────────────────────────────────────────────────────────
+function buildRadioSnippet(opts: {
+  radioState: RadioState;
+  isSelected: boolean;
+  showLabel: boolean;
+  labelText: string;
+  showGroup: boolean;
+  groupLabels: string[];
+  selectedIndex: number;
+}): { html: string; css: string } {
+  const {
+    radioState,
+    isSelected,
+    showLabel,
+    labelText,
+    showGroup,
+    groupLabels,
+    selectedIndex,
+  } = opts;
+  const stateAttr = RADIO_STATE_ATTR[radioState];
+  const disabled = radioState === "Disabled";
+
+  const baseCss = `/* Radio button — Figma 7:16556 · tokens Feature 02 */
+.ds-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-radio-label-gap, 6px);
+  cursor: ${disabled ? "not-allowed" : "pointer"};
+}
+
+.ds-radio[data-disabled="true"] {
+  opacity: var(--ds-radio-disabled-opacity, 0.38);
+  cursor: not-allowed;
+}
+
+.ds-radio[data-selected="true"] {
+  --ds-radio-ring-color: var(--ds-color-brand);
+}
+
+.ds-radio[data-selected="false"] {
+  --ds-radio-ring-color: var(--ds-color-control-ink);
+}
+
+.ds-radio__touch {
+  width: var(--ds-radio-touch-target, 48px);
+  height: var(--ds-radio-touch-target, 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-radio__state-layer {
+  width: var(--ds-radio-state-layer, 40px);
+  height: var(--ds-radio-state-layer, 40px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-radio[data-state="hover"] .ds-radio__state-layer {
+  background: color-mix(in srgb, var(--ds-radio-ring-color) 8%, transparent);
+}
+
+.ds-radio[data-state="focus"] .ds-radio__state-layer,
+.ds-radio[data-state="pressed"] .ds-radio__state-layer {
+  background: color-mix(in srgb, var(--ds-radio-ring-color) 12%, transparent);
+}
+
+.ds-radio__outer {
+  width: var(--ds-radio-outer-size, 20px);
+  height: var(--ds-radio-outer-size, 20px);
+  border-radius: 50%;
+  border: var(--ds-radio-border-width, 2px) solid var(--ds-radio-ring-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.ds-radio__inner {
+  width: var(--ds-radio-inner-dot, 10px);
+  height: var(--ds-radio-inner-dot, 10px);
+  border-radius: 50%;
+  background: var(--ds-radio-ring-color);
+  transform: scale(0);
+}
+
+.ds-radio[data-selected="true"] .ds-radio__inner {
+  transform: scale(1);
+}
+
+.ds-radio__label {
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  color: var(--ds-color-control-ink);
+}
+
+.ds-radio[data-disabled="true"] .ds-radio__label {
+  color: var(--ds-color-control-ink-muted);
+}`;
+
+  const itemHtml = (selected: boolean, label: string) => {
+    const labelBlock =
+      showLabel && label
+        ? `\n  <span class="ds-radio__label">${label}</span>`
+        : "";
+    return `<label class="ds-radio" data-selected="${selected}" data-state="${stateAttr}" data-disabled="${disabled}">
+  <span class="ds-radio__touch">
+    <span class="ds-radio__state-layer">
+      <span class="ds-radio__outer"><span class="ds-radio__inner"></span></span>
+    </span>
+  </span>${labelBlock}
+  <input type="radio" name="group"${selected ? " checked" : ""} hidden />
+</label>`;
+  };
+
+  if (showGroup) {
+    const items = groupLabels
+      .map((label, i) => `  ${itemHtml(i === selectedIndex, label)}`)
+      .join("\n");
+    return {
+      html: `<div role="radiogroup" class="ds-radio-group">\n${items}\n</div>`,
+      css: `${baseCss}\n\n.ds-radio-group {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}`,
+    };
+  }
+
+  return {
+    html: itemHtml(isSelected, showLabel ? labelText : ""),
+    css: baseCss,
+  };
+}
 
 export function RadioButtonView() {
   const { contentPaddingClass } = useControlsPanel();
   const { theme } = useTheme();
-  const tokens = theme === "dark" ? darkTokens : lightTokens;
-
-  const accentBlue = resolveColor(
-    tokens,
-    "global.color.Button color.button-color"
-  );
+  const mode = theme === "dark" ? "dark" : "light";
 
   const [radioState, setRadioState] = useState<RadioState>("Enabled");
   const [isSelected, setIsSelected] = useState(true);
@@ -268,150 +307,90 @@ export function RadioButtonView() {
     }
   }, [radioState]);
 
-  const stateColors = useMemo(() => {
-    const t = tokens as any;
-    const brand = resolveColor(t, "global.color.Button color.button-color");
-    const brandHover = resolveColor(
-      t,
-      "global.color.Button color.button-hover"
-    );
-    const onSurface = resolveColor(
-      t,
-      "global.color.Text colors.text-primary"
-    );
-    const disabled = resolveColor(
-      t,
-      "global.color.Button color.button-disabled"
-    );
-    return [
-      { label: "Selected", hex: brand, tokenName: "button-color" },
-      { label: "Unselected", hex: onSurface, tokenName: "text-primary" },
-      {
-        label: "Hover (selected)",
-        hex: brandHover,
-        tokenName: "button-hover",
-      },
-      { label: "Focus ring", hex: brand, tokenName: "button-color" },
-      { label: "Disabled", hex: disabled, tokenName: "button-disabled" },
-    ];
-  }, [theme, tokens]);
+  const stateColors = useMemo(
+    () =>
+      RADIO_COLOR_DEFS.map((d) => ({
+        label: d.label,
+        cssVar: d.cssVar,
+        jsonPath: d.jsonPath,
+        hex: d.resolve(mode),
+      })),
+    [mode],
+  );
 
-  const codeSnippet = useMemo(() => {
-    const brand = resolveColor(
-      tokens,
-      "global.color.Button color.button-color"
-    );
-    const onSurface = resolveColor(
-      tokens,
-      "global.color.Text colors.text-primary"
-    );
-    const isDisabled = radioState === "Disabled";
+  const codeSnippet = useMemo(
+    () =>
+      buildRadioSnippet({
+        radioState,
+        isSelected,
+        showLabel,
+        labelText,
+        showGroup,
+        groupLabels,
+        selectedIndex,
+      }),
+    [
+      radioState,
+      isSelected,
+      showLabel,
+      labelText,
+      showGroup,
+      groupLabels,
+      selectedIndex,
+    ],
+  );
 
-    const circleColor = isSelected ? brand : onSurface;
-    let stateLayerBg = "transparent";
-    if (!isDisabled) {
-      if (radioState === "Hover")
-        stateLayerBg = hexToRgba(circleColor, 0.08);
-      if (radioState === "Focus" || radioState === "Pressed")
-        stateLayerBg = hexToRgba(circleColor, 0.12);
-    }
+  const switchOnStyle = { backgroundColor: "var(--ds-color-brand)" } as const;
+  const isChecked = showGroup ? selectedIndex >= 0 : isSelected;
 
-    if (showGroup) {
-      const items = groupLabels
-        .map((label, i) => {
-          const sel = i === selectedIndex;
-          const cc = sel ? brand : onSurface;
-          const labelHtml = showLabel
-            ? `\n    <span style="font-family: '${FONT_FAMILY}', sans-serif; font-size: ${LABEL_FONT_SIZE}px; color: ${onSurface};">${label}</span>`
-            : "";
-          return `  <label style="display: inline-flex; align-items: center; gap: ${LABEL_GAP}px; cursor: ${isDisabled ? "not-allowed" : "pointer"}; opacity: ${isDisabled ? 0.38 : 1};">
-    <span style="width: ${RADIO_TOUCH_TARGET}px; height: ${RADIO_TOUCH_TARGET}px; display: flex; align-items: center; justify-content: center;">
-      <span style="width: ${STATE_LAYER_SIZE}px; height: ${STATE_LAYER_SIZE}px; border-radius: 50%; background: ${stateLayerBg}; display: flex; align-items: center; justify-content: center;">
-        <span style="width: ${RADIO_OUTER_SIZE}px; height: ${RADIO_OUTER_SIZE}px; border-radius: 50%; border: ${RADIO_BORDER_WIDTH}px solid ${cc}; display: flex; align-items: center; justify-content: center;">
-          ${sel ? `<span style="width: ${RADIO_INNER_DOT}px; height: ${RADIO_INNER_DOT}px; border-radius: 50%; background: ${cc};"></span>` : ""}
-        </span>
-      </span>
-    </span>
-    ${labelHtml}
-    <input type="radio" name="group"${sel ? " checked" : ""} style="display: none;" />
-  </label>`;
-        })
-        .join("\n");
-      return `<div role="radiogroup" style="display: flex; flex-direction: column; gap: 4px;">\n${items}\n</div>`;
-    }
-
-    const dotHtml = isSelected
-      ? `\n          <span style="width: ${RADIO_INNER_DOT}px; height: ${RADIO_INNER_DOT}px; border-radius: 50%; background: ${circleColor};"></span>`
-      : "";
-
-    const singleLabelHtml = showLabel
-      ? `\n  <span style="font-family: '${FONT_FAMILY}', sans-serif; font-size: ${LABEL_FONT_SIZE}px; color: ${isDisabled ? "#98A2B3" : onSurface};">${labelText}</span>`
-      : "";
-
-    return `<label style="display: inline-flex; align-items: center; gap: ${LABEL_GAP}px; cursor: ${isDisabled ? "not-allowed" : "pointer"}; opacity: ${isDisabled ? 0.38 : 1};">
-  <span style="width: ${RADIO_TOUCH_TARGET}px; height: ${RADIO_TOUCH_TARGET}px; display: flex; align-items: center; justify-content: center;">
-    <span style="width: ${STATE_LAYER_SIZE}px; height: ${STATE_LAYER_SIZE}px; border-radius: 50%; background: ${stateLayerBg}; display: flex; align-items: center; justify-content: center;">
-      <span style="width: ${RADIO_OUTER_SIZE}px; height: ${RADIO_OUTER_SIZE}px; border-radius: 50%; border: ${RADIO_BORDER_WIDTH}px solid ${circleColor}; display: flex; align-items: center; justify-content: center;">${dotHtml}
-      </span>
-    </span>
-  </span>
-  ${singleLabelHtml}
-  <input type="radio"${isSelected ? " checked" : ""} style="display: none;" />
-</label>`;
-  }, [
-    radioState,
-    isSelected,
-    labelText,
-    showLabel,
-    showGroup,
-    groupLabels,
-    selectedIndex,
-    tokens,
-  ]);
+  const previewHandlers = {
+    onMouseEnter: () => {
+      if (radioState === "Enabled") setPreviewHover(true);
+    },
+    onMouseLeave: () => {
+      if (radioState === "Enabled") {
+        setPreviewHover(false);
+        setPreviewPressed(false);
+      }
+    },
+    onMouseDown: () => {
+      if (radioState === "Enabled") setPreviewPressed(true);
+    },
+    onMouseUp: () => {
+      if (radioState === "Enabled") setPreviewPressed(false);
+    },
+  };
 
   return (
-    <div className="flex gap-8">
-      {/* ── Main content ──────────────────────────────────────────────── */}
+    <div className={`${styles.root} flex gap-8`}>
       <div className={`flex-1 min-w-0 ${contentPaddingClass}`}>
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Radio Button
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
-            Explora, entiende y configura el componente radio button del sistema
-            de diseño.
-          </p>
-        </div>
+        <p className={styles.intro}>
+          Explora, entiende y configura el componente radio button del sistema
+          de diseño. Colores vía{" "}
+          <code className="font-mono text-[length:inherit]">var(--ds-*)</code>{" "}
+          alineados a Feature 02 (Figma 7:16556).
+        </p>
 
-        {/* ── Preview ─────────────────────────────────────────────────── */}
         <div className="mb-4">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl relative overflow-hidden min-h-[280px]">
-            <div className="absolute left-0 right-0 top-14 h-px bg-gray-200 dark:bg-gray-800" />
-            <div className="absolute top-3 left-0 right-0 flex items-center justify-between pl-5 pr-3 z-10">
-              <h2 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Preview
-              </h2>
+          <div className={styles.previewCard}>
+            <div className={styles.previewDivider} />
+            <div className={styles.previewToolbar}>
+              <h2 className={styles.previewTitle}>Preview</h2>
               <button
+                type="button"
                 onClick={() => setShowCodeModal(true)}
-                className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all overflow-clip shadow-[inset_0px_0px_0px_1px_rgba(1,17,31,0.1),inset_0px_-2px_2px_0px_rgba(1,17,31,0.1)]"
+                className={styles.codeButton}
                 title="View Code"
               >
                 <CodeXml className="w-5 h-5" />
               </button>
             </div>
-            <div className="absolute left-0 right-0 top-16 bottom-0 flex items-center justify-center">
+            <div className={styles.previewStage}>
               {showGroup ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 4,
-                  }}
-                >
+                <div className={styles.radioGroup}>
                   {groupLabels.map((label, i) => (
                     <div
-                      key={i}
+                      key={label}
                       onClick={() => {
                         if (radioState !== "Disabled") setSelectedIndex(i);
                       }}
@@ -420,24 +399,7 @@ export function RadioButtonView() {
                         radioState={effectiveState}
                         isSelected={i === selectedIndex}
                         labelText={showLabel ? label : ""}
-                        tokens={tokens}
-                        onMouseEnter={() => {
-                          if (radioState === "Enabled") setPreviewHover(true);
-                        }}
-                        onMouseLeave={() => {
-                          if (radioState === "Enabled") {
-                            setPreviewHover(false);
-                            setPreviewPressed(false);
-                          }
-                        }}
-                        onMouseDown={() => {
-                          if (radioState === "Enabled")
-                            setPreviewPressed(true);
-                        }}
-                        onMouseUp={() => {
-                          if (radioState === "Enabled")
-                            setPreviewPressed(false);
-                        }}
+                        {...previewHandlers}
                       />
                     </div>
                   ))}
@@ -452,22 +414,7 @@ export function RadioButtonView() {
                     radioState={effectiveState}
                     isSelected={isSelected}
                     labelText={showLabel ? labelText : ""}
-                    tokens={tokens}
-                    onMouseEnter={() => {
-                      if (radioState === "Enabled") setPreviewHover(true);
-                    }}
-                    onMouseLeave={() => {
-                      if (radioState === "Enabled") {
-                        setPreviewHover(false);
-                        setPreviewPressed(false);
-                      }
-                    }}
-                    onMouseDown={() => {
-                      if (radioState === "Enabled") setPreviewPressed(true);
-                    }}
-                    onMouseUp={() => {
-                      if (radioState === "Enabled") setPreviewPressed(false);
-                    }}
+                    {...previewHandlers}
                   />
                 </div>
               )}
@@ -475,69 +422,56 @@ export function RadioButtonView() {
           </div>
         </div>
 
-        {/* ── Component Spec ──────────────────────────────────────────── */}
         <div className="flex flex-col gap-4">
-          {/* Typography (Label) */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Typography (Label)
-            </h3>
-            <div className="space-y-0 divide-y divide-gray-100 dark:divide-gray-800">
-              <SpecRow label="Font family" value={FONT_FAMILY} />
-              <SpecRow label="Font size" value={`${LABEL_FONT_SIZE}px`} />
+          <div className={styles.specCard}>
+            <h3 className={styles.specHeading}>Typography (Label)</h3>
+            <div className={styles.specDivider}>
+              <SpecRow
+                label="Font family"
+                value="var(--ds-typography-font-family)"
+              />
+              <SpecRow
+                label="Font size"
+                value="var(--ds-typography-body-md-font-size)"
+              />
               <SpecRow label="Font weight" value="400 (Regular)" />
               <SpecRow label="Line height" value="1.5" />
             </div>
           </div>
 
-          {/* Radio Control */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Radio Control
-            </h3>
-            <div className="space-y-0 divide-y divide-gray-100 dark:divide-gray-800">
-              <SpecRow
-                label="Outer size"
-                value={`${RADIO_OUTER_SIZE}px`}
-              />
-              <SpecRow
-                label="Inner dot"
-                value={`${RADIO_INNER_DOT}px`}
-              />
+          <div className={styles.specCard}>
+            <h3 className={styles.specHeading}>Radio Control</h3>
+            <div className={styles.specDivider}>
+              <SpecRow label="Outer size" value="var(--ds-radio-outer-size)" />
+              <SpecRow label="Inner dot" value="var(--ds-radio-inner-dot)" />
               <SpecRow label="Border radius" value="50% (Circle)" />
               <SpecRow
                 label="Border width"
-                value={`${RADIO_BORDER_WIDTH}px`}
+                value="var(--ds-radio-border-width)"
               />
               <SpecRow
                 label="Touch target"
-                value={`${RADIO_TOUCH_TARGET}px`}
+                value="var(--ds-radio-touch-target)"
               />
               <SpecRow
                 label="State layer"
-                value={`${STATE_LAYER_SIZE}px`}
+                value="var(--ds-radio-state-layer)"
               />
-              <SpecRow label="Label gap" value={`${LABEL_GAP}px`} />
+              <SpecRow label="Label gap" value="var(--ds-radio-label-gap)" />
             </div>
           </div>
 
-          {/* Colors (States) */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Colors (States)
-            </h3>
-            <div className="space-y-1 divide-y divide-gray-100 dark:divide-gray-800">
+          <div className={styles.specCard}>
+            <h3 className={styles.specHeading}>Colors (States)</h3>
+            <div className={styles.specDivider}>
               {stateColors.map((sc) => (
                 <StateColorCard key={sc.label} {...sc} />
               ))}
             </div>
           </div>
 
-          {/* All States Gallery */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              All States
-            </h3>
+          <div className={styles.specCard}>
+            <h3 className={styles.specHeading}>All States</h3>
             <div className="grid grid-cols-2 gap-6">
               {(
                 [
@@ -549,18 +483,15 @@ export function RadioButtonView() {
                 ] as RadioState[]
               ).map((state) => (
                 <div key={state} className="space-y-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
-                    {state}
-                  </p>
+                  <p className={styles.stateGallerySection}>{state}</p>
                   <div className="flex gap-6">
                     <div className="flex flex-col items-center gap-1">
                       <RadioButtonPreview
                         radioState={state}
-                        isSelected={true}
+                        isSelected
                         labelText=""
-                        tokens={tokens}
                       />
-                      <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                      <span className={styles.stateGalleryLabel}>
                         Selected
                       </span>
                     </div>
@@ -569,9 +500,8 @@ export function RadioButtonView() {
                         radioState={state}
                         isSelected={false}
                         labelText=""
-                        tokens={tokens}
                       />
-                      <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                      <span className={styles.stateGalleryLabel}>
                         Unselected
                       </span>
                     </div>
@@ -583,21 +513,17 @@ export function RadioButtonView() {
         </div>
       </div>
 
-      {/* ── Right Panel (Control Panel) ───────────────────────────────── */}
       <ControlsPanelFrame>
         <div className="p-6 space-y-6">
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-              Controls
-            </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <h2 className={styles.panelTitle}>Controls</h2>
+            <p className={styles.panelHint}>
               Configure the radio button properties
             </p>
           </div>
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={styles.panelDivider} />
 
-          {/* State */}
           <SegmentedControl
             label="State"
             value={radioState}
@@ -611,44 +537,31 @@ export function RadioButtonView() {
             onChange={setRadioState}
           />
 
-          {/* Selection toggle */}
           <div>
             <label className="flex items-center justify-between gap-4">
-              <span className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Selected
-              </span>
+              <span className={styles.panelLabel}>Selected</span>
               <Switch
-                checked={showGroup ? selectedIndex >= 0 : isSelected}
+                checked={isChecked}
                 onCheckedChange={(v) => {
-                  if (showGroup) {
-                    setSelectedIndex(v ? 0 : -1);
-                  } else {
-                    setIsSelected(v);
-                  }
+                  if (showGroup) setSelectedIndex(v ? 0 : -1);
+                  else setIsSelected(v);
                 }}
                 aria-label="Toggle selection"
-                style={
-                  (showGroup ? selectedIndex >= 0 : isSelected)
-                    ? { backgroundColor: accentBlue }
-                    : undefined
-                }
+                style={isChecked ? switchOnStyle : undefined}
               />
             </label>
           </div>
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={styles.panelDivider} />
 
-          {/* Group toggle */}
           <div>
             <label className="flex items-center justify-between gap-4">
-              <span className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Radio Group
-              </span>
+              <span className={styles.panelLabel}>Radio Group</span>
               <Switch
                 checked={showGroup}
-                onCheckedChange={(v) => setShowGroup(v)}
+                onCheckedChange={setShowGroup}
                 aria-label="Toggle radio group"
-                style={showGroup ? { backgroundColor: accentBlue } : undefined}
+                style={showGroup ? switchOnStyle : undefined}
               />
             </label>
           </div>
@@ -665,55 +578,46 @@ export function RadioButtonView() {
             />
           )}
 
-          {/* Label toggle */}
           <div>
             <label className="flex items-center justify-between gap-4">
-              <span className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Label Text
-              </span>
+              <span className={styles.panelLabel}>Label Text</span>
               <Switch
                 checked={showLabel}
-                onCheckedChange={(v) => setShowLabel(v)}
+                onCheckedChange={setShowLabel}
                 aria-label="Toggle label text"
-                style={showLabel ? { backgroundColor: accentBlue } : undefined}
+                style={showLabel ? switchOnStyle : undefined}
               />
             </label>
           </div>
 
-          {/* Label text */}
           {!showGroup && showLabel && (
             <div>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              <label className={`${styles.panelLabel} block mb-1.5`}>
                 Label Text
               </label>
               <input
                 type="text"
                 value={labelText}
                 onChange={(e) => setLabelText(e.target.value)}
-                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={styles.panelInput}
               />
             </div>
           )}
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={styles.panelDivider} />
 
-          {/* Quick reference */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+            <label className={`${styles.panelLabel} block mb-2`}>
               Current Config
             </label>
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 space-y-1.5">
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">State</span>
-                <span className="text-gray-900 dark:text-white font-medium">
-                  {radioState}
-                </span>
+            <div className={styles.configBox}>
+              <div className={styles.configRow}>
+                <span className={styles.configKey}>State</span>
+                <span className={styles.configVal}>{radioState}</span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">
-                  Selected
-                </span>
-                <span className="text-gray-900 dark:text-white font-medium">
+              <div className={styles.configRow}>
+                <span className={styles.configKey}>Selected</span>
+                <span className={styles.configVal}>
                   {showGroup
                     ? selectedIndex >= 0
                       ? `Option ${selectedIndex + 1}`
@@ -723,41 +627,21 @@ export function RadioButtonView() {
                       : "No"}
                 </span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">Mode</span>
-                <span className="text-gray-900 dark:text-white font-medium">
+              <div className={styles.configRow}>
+                <span className={styles.configKey}>Mode</span>
+                <span className={styles.configVal}>
                   {showGroup ? "Group" : "Single"}
                 </span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">Label</span>
-                <span className="text-gray-900 dark:text-white font-medium">
+              <div className={styles.configRow}>
+                <span className={styles.configKey}>Label</span>
+                <span className={styles.configVal}>
                   {showLabel ? "On" : "Off"}
                 </span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">
-                  Radio size
-                </span>
-                <span className="text-gray-900 dark:text-white font-mono">
-                  {RADIO_OUTER_SIZE}px
-                </span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">
-                  Touch target
-                </span>
-                <span className="text-gray-900 dark:text-white font-mono">
-                  {RADIO_TOUCH_TARGET}px
-                </span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">
-                  Font size
-                </span>
-                <span className="text-gray-900 dark:text-white font-mono">
-                  {LABEL_FONT_SIZE}px
-                </span>
+              <div className={styles.configRow}>
+                <span className={styles.configKey}>Ring (selected)</span>
+                <span className={styles.configValMono}>--ds-color-brand</span>
               </div>
             </div>
           </div>
@@ -768,7 +652,8 @@ export function RadioButtonView() {
         <CodeModal
           onClose={() => setShowCodeModal(false)}
           title={`Radio Button — ${radioState} / ${isSelected ? "Selected" : "Unselected"}${showGroup ? " (Group)" : ""}`}
-          code={codeSnippet}
+          html={codeSnippet.html}
+          css={codeSnippet.css}
         />
       )}
     </div>

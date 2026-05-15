@@ -1,78 +1,153 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useTheme } from "./theme-provider";
 import { CodeXml } from "lucide-react";
 import { ControlSelect, SegmentedControl } from "./design-system-controls";
 import { Switch } from "./ui/switch";
-import lightTokens from "../../imports/Ligth_mode.tokens-3.json";
-import darkTokens from "../../imports/darkmode.tokens-3.json";
 import { allMaterialIconNames } from "../data/material-icon-catalog";
+import {
+  getFlagIconUrl,
+  type FlagIconEntry,
+} from "../data/flag-icons-catalog";
 import { CodeModal } from "./code-modal";
 import { useControlsPanel } from "./controls-panel-context";
 import { ControlsPanelFrame } from "./controls-panel-frame";
+import { useTheme } from "./theme-provider";
+import {
+  resolveJsonBorderColor,
+  resolveJsonButtonColor,
+  resolveJsonTextColor,
+} from "../utils/token-parser";
+import shell from "./radio-button.module.css";
+import styles from "./inputs.module.css";
 
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-type InputType = "Label text" | "Input text" | "Number";
+type InputType =
+  | "Label text"
+  | "Input text"
+  | "Number default"
+  | "Number floating";
 type InputState = "Default" | "Focused" | "Filled" | "Error" | "Disabled";
 type IconPosition = "none" | "left";
 
-// ─── Token helpers ──────────────────────────────────────────────────────────
-
-function resolveRef(ref: string, root: any): string | null {
-  const path = ref.replace(/[{}]/g, "").split(".");
-  let current = root;
-  for (const p of path) {
-    current = current?.[p];
-    if (!current) return null;
-  }
-  return current?.$value?.hex || null;
+function isNumberInputType(type: InputType): boolean {
+  return type === "Number default" || type === "Number floating";
 }
 
-function resolveColor(tokens: any, path: string): string {
-  const parts = path.split(".");
-  let current = tokens;
-  for (const p of parts) current = current?.[p];
-  const val = current?.$value;
-  if (!val) return "#000";
-  if (typeof val === "string" && val.startsWith("{")) return resolveRef(val, tokens) || "#000";
-  return val?.hex || "#000";
+function isNumberFloatingType(type: InputType): boolean {
+  return type === "Number floating";
 }
 
-// ─── Constants ──────────────────────────────────────────────────────────────
-
-const FONT_FAMILY = (lightTokens as any)?.global?.typography?.fontFamily?.Primary?.$value || "Roboto";
-const INPUT_RADIUS = 8;
-const INPUT_PADDING_X = 12;
-const INPUT_PADDING_Y = 14;
-
-const MATERIAL_SYMBOL_STYLE: React.CSSProperties = {
-  fontSize: 20,
-  color: "inherit",
-  fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24",
+const INPUT_STATE_ATTR: Record<InputState, string> = {
+  Default: "default",
+  Focused: "focused",
+  Filled: "filled",
+  Error: "error",
+  Disabled: "disabled",
 };
 
-const COUNTRY_LIST = [
-  { code: "+57", flag: "🇨🇴", name: "Colombia" },
-  { code: "+1", flag: "🇺🇸", name: "Estados Unidos" },
-  { code: "+52", flag: "🇲🇽", name: "México" },
-  { code: "+54", flag: "🇦🇷", name: "Argentina" },
-  { code: "+56", flag: "🇨🇱", name: "Chile" },
-  { code: "+51", flag: "🇵🇪", name: "Perú" },
-  { code: "+593", flag: "🇪🇨", name: "Ecuador" },
-  { code: "+58", flag: "🇻🇪", name: "Venezuela" },
-  { code: "+55", flag: "🇧🇷", name: "Brasil" },
-  { code: "+34", flag: "🇪🇸", name: "España" },
-  { code: "+44", flag: "🇬🇧", name: "Reino Unido" },
-  { code: "+49", flag: "🇩🇪", name: "Alemania" },
-  { code: "+33", flag: "🇫🇷", name: "Francia" },
-  { code: "+39", flag: "🇮🇹", name: "Italia" },
-  { code: "+81", flag: "🇯🇵", name: "Japón" },
-  { code: "+82", flag: "🇰🇷", name: "Corea del Sur" },
-  { code: "+91", flag: "🇮🇳", name: "India" },
-  { code: "+86", flag: "🇨🇳", name: "China" },
+const BORDER_COLOR_DEFS = [
+  {
+    label: "Default",
+    cssVar: "--ds-input-border",
+    jsonPath: "Border color.border-primary",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonBorderColor("border-primary", mode),
+  },
+  {
+    label: "Focused",
+    cssVar: "--ds-input-border-focus",
+    jsonPath: "Button color.button-hover",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonButtonColor("button-hover", mode),
+  },
+  {
+    label: "Error",
+    cssVar: "--ds-input-border-error",
+    jsonPath: "Text colors.text-error",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonTextColor("text-error", mode),
+  },
+  {
+    label: "Disabled",
+    cssVar: "--ds-input-border",
+    jsonPath: "Border color.border-primary",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonBorderColor("border-primary", mode),
+  },
+] as const;
+
+const TEXT_COLOR_DEFS = [
+  {
+    label: "Primary",
+    cssVar: "--ds-color-control-ink",
+    jsonPath: "Text colors.text-primary",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonTextColor("text-primary", mode),
+  },
+  {
+    label: "Secondary",
+    cssVar: "--ds-color-control-ink-muted",
+    jsonPath: "Text colors.text-secondary",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonTextColor("text-secondary", mode),
+  },
+  {
+    label: "Disabled",
+    cssVar: "--ds-input-text-disabled",
+    jsonPath: "Text colors.text-disabled",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonTextColor("text-disabled", mode),
+  },
+  {
+    label: "Error",
+    cssVar: "--ds-input-text-error",
+    jsonPath: "Text colors.text-error",
+    resolve: (mode: "light" | "dark") =>
+      resolveJsonTextColor("text-error", mode),
+  },
+] as const;
+
+/**
+ * Catálogo de prefijos: cada entrada referencia un asset de bandera
+ * existente en Foundations / Flags (mismo set ISO2 que `flag-icons-catalog`).
+ */
+const COUNTRY_LIST: { code: string; iso2: string; name: string }[] = [
+  { code: "+57", iso2: "co", name: "Colombia" },
+  { code: "+1", iso2: "us", name: "Estados Unidos" },
+  { code: "+52", iso2: "mx", name: "México" },
+  { code: "+54", iso2: "ar", name: "Argentina" },
+  { code: "+56", iso2: "cl", name: "Chile" },
+  { code: "+51", iso2: "pe", name: "Perú" },
+  { code: "+593", iso2: "ec", name: "Ecuador" },
+  { code: "+58", iso2: "ve", name: "Venezuela" },
+  { code: "+55", iso2: "br", name: "Brasil" },
+  { code: "+34", iso2: "es", name: "España" },
+  { code: "+44", iso2: "gb", name: "Reino Unido" },
+  { code: "+49", iso2: "de", name: "Alemania" },
+  { code: "+33", iso2: "fr", name: "Francia" },
+  { code: "+39", iso2: "it", name: "Italia" },
+  { code: "+81", iso2: "jp", name: "Japón" },
+  { code: "+82", iso2: "kr", name: "Corea del Sur" },
+  { code: "+91", iso2: "in", name: "India" },
+  { code: "+86", iso2: "cn", name: "China" },
 ];
 
-// ─── Input preview component ────────────────────────────────────────────────
+function CountryFlag({ iso2, name }: { iso2: string; name: string }) {
+  const entry: FlagIconEntry = {
+    id: `iso-${iso2}`,
+    name,
+    iso2: iso2.toLowerCase(),
+  };
+  return (
+    <img
+      className={styles.flagIcon}
+      src={getFlagIconUrl(entry, 64)}
+      alt={`Bandera ${name}`}
+      width={24}
+      height={24}
+      loading="lazy"
+      decoding="async"
+    />
+  );
+}
 
 function InputPreview({
   inputType,
@@ -86,7 +161,6 @@ function InputPreview({
   showHelper,
   showRequired,
   numberPrefix,
-  tokens,
   onValueChange,
   onPrefixChange,
   onFocus,
@@ -103,29 +177,24 @@ function InputPreview({
   showHelper: boolean;
   showRequired: boolean;
   numberPrefix: string;
-  tokens: any;
   onValueChange?: (value: string) => void;
   onPrefixChange?: (code: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
 }) {
-  const borderPrimary = resolveColor(tokens, "global.color.Border color.border-primary");
-  const borderFocus = resolveColor(tokens, "global.color.Button color.button-color");
-  const borderFocusHover = resolveColor(tokens, "global.color.Button color.button-hover");
-  const borderError = resolveColor(tokens, "global.color.Text colors.text-error");
-  // Disabled border uses the same neutral as "primary" per browser preview + Figma variants.
-  const borderDisabled = borderPrimary;
-  const textPrimary = resolveColor(tokens, "global.color.Text colors.text-primary");
-  const textSecondary = resolveColor(tokens, "global.color.Text colors.text-secondary");
-  const textDisabled = resolveColor(tokens, "global.color.Text colors.text-disabled");
-  const textError = resolveColor(tokens, "global.color.Text colors.text-error");
-  const bgContainer = resolveColor(tokens, "global.color.Background.bg-container");
+  const stateAttr = INPUT_STATE_ATTR[inputState];
+  const isDisabled = inputState === "Disabled";
+  const isFloating = inputType === "Input text";
+  const isNumber = isNumberInputType(inputType);
+  const numberFloating = isNumberFloatingType(inputType);
+  const hasValue = valueText.trim().length > 0;
 
   const [countryOpen, setCountryOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const selectedCountry = COUNTRY_LIST.find((c) => c.code === numberPrefix) || COUNTRY_LIST[0];
+  const selectedCountry =
+    COUNTRY_LIST.find((c) => c.code === numberPrefix) || COUNTRY_LIST[0];
 
   const filteredCountries = countrySearch
     ? COUNTRY_LIST.filter(
@@ -147,319 +216,158 @@ function InputPreview({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [countryOpen]);
 
-  const isDisabled = inputState === "Disabled";
-  const isError = inputState === "Error";
-  const isFocused = inputState === "Focused";
-  const isFilled = inputState === "Filled";
-  const isFloating = inputType === "Input text";
-  const isNumber = inputType === "Number";
-  const hasValue = valueText.trim().length > 0;
-
-  const borderColor = isError
-    ? borderError
-    : isFocused
-      ? borderFocusHover
-      : isDisabled
-        ? borderDisabled
-        : borderPrimary;
-
-  /** Focus (no error): 1.5px + token button-hover; resto 1px */
-  const inputBorderWidth = isFocused && !isError ? 1.5 : 1;
-
-  const labelColor = isDisabled
-    ? textDisabled
-    : isError
-      ? textPrimary
-      : isFocused
-        ? textSecondary
-        : isFilled
-          ? textPrimary
-          : textSecondary;
-
-  const valueColor = isDisabled ? textDisabled : textPrimary;
-
-  const helperColor = isError ? textError : isDisabled ? textDisabled : textSecondary;
-
-  const iconColor = isDisabled ? textDisabled : isFocused || isFilled ? textPrimary : textSecondary;
-
-  const containerStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    paddingLeft: INPUT_PADDING_X,
-    paddingRight: 14,
-    paddingTop: INPUT_PADDING_Y,
-    paddingBottom: INPUT_PADDING_Y,
-    borderRadius: INPUT_RADIUS,
-    border: `${inputBorderWidth}px solid ${borderColor}`,
-    fontFamily: `'${FONT_FAMILY}', sans-serif`,
-    fontSize: 16,
-    lineHeight: "24px",
-    position: "relative",
-    width: "100%",
-    maxWidth: 320,
-    minWidth: 0,
-    boxSizing: "border-box",
-    cursor: isDisabled ? "not-allowed" : "text",
-    opacity: isDisabled ? 0.7 : 1,
-    backgroundColor: "transparent",
-    transition: "border-color 0.15s ease, border-width 0.15s ease",
-  };
-
-  const numberLeftStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    paddingLeft: INPUT_PADDING_X,
-    paddingRight: 12,
-    paddingTop: INPUT_PADDING_Y,
-    paddingBottom: INPUT_PADDING_Y,
-    borderTopLeftRadius: INPUT_RADIUS,
-    borderBottomLeftRadius: INPUT_RADIUS,
-    border: `${inputBorderWidth}px solid ${borderColor}`,
-    borderRight: "none",
-    width: 88,
-    fontFamily: `'${FONT_FAMILY}', sans-serif`,
-    fontSize: 16,
-    lineHeight: "24px",
-    color: isDisabled ? textDisabled : textPrimary,
-    backgroundColor: "transparent",
-    opacity: isDisabled ? 0.7 : 1,
-  };
-
-  const numberRightStyle: React.CSSProperties = {
-    ...containerStyle,
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
-    borderTopRightRadius: INPUT_RADIUS,
-    borderBottomRightRadius: INPUT_RADIUS,
-    borderLeft: "none",
-    width: 232,
-  };
-
   useEffect(() => {
-    const input = document.getElementById("input-preview-field") as HTMLInputElement | null;
+    const input = document.getElementById(
+      "input-preview-field",
+    ) as HTMLInputElement | null;
     if (!input) return;
-    if (isFocused && !isDisabled) {
+    if (inputState === "Focused" && !isDisabled) {
       input.focus();
     }
-  }, [isFocused, isDisabled]);
+  }, [inputState, isDisabled]);
+
+  const helperState =
+    inputState === "Error"
+      ? "error"
+      : inputState === "Disabled"
+        ? "disabled"
+        : "default";
 
   return (
-    <div style={{ width: "100%", maxWidth: 320, minWidth: 0, boxSizing: "border-box" }}>
+    <div
+      className={styles.previewWrap}
+      data-variant={isNumber ? "number" : "default"}
+    >
       {isNumber ? (
-        <div style={{ display: "flex", width: "100%", maxWidth: 320, minWidth: 0, position: "relative" }} ref={dropdownRef}>
+        <div
+          className={styles.numberRow}
+          data-state={stateAttr}
+          ref={dropdownRef}
+        >
+          {numberFloating && labelText ? (
+            <div className={styles.floatingLabel}>
+              <span className={styles.floatingLabelText}>{labelText}</span>
+              {showRequired ? (
+                <span className={styles.requiredMark} aria-hidden>
+                  *
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+
+          <div className={styles.numberCluster}>
           <div
-            style={{ ...numberLeftStyle, cursor: isDisabled ? "not-allowed" : "pointer" }}
-            onClick={() => { if (!isDisabled) { setCountryOpen(!countryOpen); setCountrySearch(""); } }}
+            className={styles.prefix}
+            data-disabled={isDisabled ? "true" : "false"}
+            onClick={() => {
+              if (!isDisabled) {
+                setCountryOpen(!countryOpen);
+                setCountrySearch("");
+              }
+            }}
           >
-            <span style={{ fontSize: 16, lineHeight: "20px" }}>{selectedCountry.flag}</span>
+            <CountryFlag iso2={selectedCountry.iso2} name={selectedCountry.name} />
             <span
-              className="material-symbols-rounded"
-              style={{
-                ...MATERIAL_SYMBOL_STYLE,
-                fontSize: 18,
-                color: isDisabled ? textDisabled : textPrimary,
-                transition: "transform 0.2s",
-                transform: countryOpen ? "rotate(180deg)" : "rotate(0deg)",
-              }}
+              className={`material-symbols-rounded ${styles.prefixChevron}`}
+              data-open={countryOpen ? "true" : "false"}
+              aria-hidden
             >
-              keyboard_arrow_down
+              arrow_drop_down
             </span>
           </div>
 
+          <div className={styles.numberField}>
+            <input
+              id="input-preview-field"
+              type="text"
+              className={styles.nativeInput}
+              value={valueText}
+              placeholder={
+                numberFloating ? placeholderText : placeholderText || "Label"
+              }
+              disabled={isDisabled}
+              onChange={(e) => onValueChange?.(e.target.value)}
+              onFocus={onFocus}
+              onBlur={onBlur}
+            />
+          </div>
+          </div>
+
           {countryOpen && (
-            <div
-              style={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                marginTop: 4,
-                width: 280,
-                maxHeight: 240,
-                overflowY: "auto",
-                backgroundColor: bgContainer,
-                border: `1px solid ${borderPrimary}`,
-                borderRadius: INPUT_RADIUS,
-                boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
-                zIndex: 50,
-                fontFamily: `'${FONT_FAMILY}', sans-serif`,
-              }}
-            >
-              <div style={{ position: "sticky", top: 0, backgroundColor: bgContainer, padding: 8, borderBottom: `1px solid ${borderPrimary}` }}>
+            <div className={styles.dropdown}>
+              <div className={styles.dropdownSearchWrap}>
                 <input
                   type="text"
+                  className={styles.dropdownSearch}
                   value={countrySearch}
                   onChange={(e) => setCountrySearch(e.target.value)}
                   placeholder="Buscar país..."
                   autoFocus
-                  style={{
-                    width: "100%",
-                    padding: "8px 10px",
-                    fontSize: 13,
-                    border: `1px solid ${borderPrimary}`,
-                    borderRadius: 6,
-                    outline: "none",
-                    fontFamily: `'${FONT_FAMILY}', sans-serif`,
-                    color: textPrimary,
-                    backgroundColor: "transparent",
-                  }}
                 />
               </div>
               {filteredCountries.map((c) => (
                 <div
                   key={c.code}
+                  className={styles.dropdownItem}
+                  data-selected={c.code === numberPrefix ? "true" : "false"}
                   onClick={() => {
                     onPrefixChange?.(c.code);
                     setCountryOpen(false);
                     setCountrySearch("");
                   }}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    padding: "10px 12px",
-                    cursor: "pointer",
-                    fontSize: 14,
-                    color: c.code === numberPrefix ? borderFocus : textPrimary,
-                    fontWeight: c.code === numberPrefix ? 600 : 400,
-                    backgroundColor: c.code === numberPrefix ? `${borderFocus}10` : "transparent",
-                    transition: "background-color 0.1s",
-                  }}
-                  onMouseEnter={(e) => { if (c.code !== numberPrefix) (e.currentTarget.style.backgroundColor = `${borderPrimary}30`); }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = c.code === numberPrefix ? `${borderFocus}10` : "transparent"; }}
                 >
-                  <span style={{ fontSize: 18 }}>{c.flag}</span>
+                  <CountryFlag iso2={c.iso2} name={c.name} />
                   <span style={{ flex: 1 }}>{c.name}</span>
-                  <span style={{ fontSize: 12, color: textSecondary, fontFamily: "monospace" }}>{c.code}</span>
+                  <span className={styles.dropdownItemCode}>{c.code}</span>
                 </div>
               ))}
               {filteredCountries.length === 0 && (
-                <div style={{ padding: "16px 12px", fontSize: 13, color: textDisabled, textAlign: "center" }}>
+                <div className={styles.dropdownEmpty}>
                   Sin resultados
                 </div>
               )}
             </div>
           )}
-
-          <div style={numberRightStyle}>
-            <input
-              id="input-preview-field"
-              type="text"
-              value={valueText}
-              placeholder={placeholderText || "Número"}
-              disabled={isDisabled}
-              onChange={(e) => onValueChange?.(e.target.value)}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              style={{
-                flex: 1,
-                minWidth: 0,
-                fontWeight: 400,
-                color: hasValue ? valueColor : labelColor,
-                backgroundColor: "transparent",
-                border: "none",
-                outline: "none",
-                fontFamily: `'${FONT_FAMILY}', sans-serif`,
-                fontSize: 16,
-                lineHeight: "24px",
-              }}
-            />
-          </div>
         </div>
       ) : (
-        <div style={containerStyle}>
-        {showIcon && (
-          <span
-            className="material-symbols-rounded"
-            style={{ ...MATERIAL_SYMBOL_STYLE, color: iconColor }}
-          >
-            {iconName}
-          </span>
-        )}
-
-        {isFloating && (
-          <div
-            style={{
-              position: "absolute",
-              top: -8,
-              left: 10,
-              right: 10,
-              paddingLeft: 4,
-              paddingRight: 4,
-              backgroundColor: bgContainer,
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              alignItems: "center",
-              gap: 2,
-              fontSize: 12,
-              lineHeight: "normal",
-              fontFamily: `'${FONT_FAMILY}', sans-serif`,
-              boxSizing: "border-box",
-              minWidth: 0,
-              wordBreak: "break-word",
-              overflowWrap: "break-word",
-            }}
-          >
-            <span
-              style={{
-                color: isDisabled ? textDisabled : textPrimary,
-                flex: "1 1 auto",
-                minWidth: 0,
-                wordBreak: "break-word",
-                overflowWrap: "break-word",
-              }}
-            >
-              {labelText}
+        <div
+          className={styles.field}
+          data-state={stateAttr}
+          data-has-value={hasValue ? "true" : "false"}
+        >
+          {showIcon && (
+            <span className={`material-symbols-rounded ${styles.materialIcon}`}>
+              {iconName}
             </span>
-            {showRequired && (
-              <span style={{ color: isError ? borderError : textError, textAlign: "center", flexShrink: 0 }}>*</span>
-            )}
-          </div>
-        )}
+          )}
 
-        <input
-          id="input-preview-field"
-          type="text"
-          value={valueText}
-          placeholder={placeholderText}
-          disabled={isDisabled}
-          onChange={(e) => onValueChange?.(e.target.value)}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          style={{
-            flex: 1,
-            minWidth: 0,
-            fontWeight: 400,
-            color: hasValue || isFloating ? valueColor : labelColor,
-            backgroundColor: "transparent",
-            border: "none",
-            outline: "none",
-            fontFamily: `'${FONT_FAMILY}', sans-serif`,
-            fontSize: 16,
-            lineHeight: "24px",
-          }}
-        />
-      </div>
+          {isFloating && (
+            <div className={styles.floatingLabel}>
+              <span className={styles.floatingLabelText}>{labelText}</span>
+              {showRequired && (
+                <span className={styles.requiredMark} aria-hidden>
+                  *
+                </span>
+              )}
+            </div>
+          )}
+
+          <input
+            id="input-preview-field"
+            type="text"
+            className={styles.nativeInput}
+            value={valueText}
+            placeholder={placeholderText}
+            disabled={isDisabled}
+            onChange={(e) => onValueChange?.(e.target.value)}
+            onFocus={onFocus}
+            onBlur={onBlur}
+          />
+        </div>
       )}
 
       {showHelper && (
-        <div
-          style={{
-            width: "100%",
-            boxSizing: "border-box",
-            paddingLeft: 8,
-            paddingRight: 4,
-            marginTop: 2,
-            fontSize: 14,
-            lineHeight: "20px",
-            fontFamily: `'${FONT_FAMILY}', sans-serif`,
-            color: helperColor,
-            wordBreak: "break-word",
-            overflowWrap: "break-word",
-          }}
-        >
+        <div className={styles.helper} data-state={helperState}>
           {helperText}
         </div>
       )}
@@ -467,43 +375,196 @@ function InputPreview({
   );
 }
 
-// ─── State color cards ──────────────────────────────────────────────────────
-
-function StateColorCard({ label, hex, tokenName }: { label: string; hex: string; tokenName: string }) {
+function StateColorCard({
+  label,
+  hex,
+  cssVar,
+  jsonPath,
+}: {
+  label: string;
+  hex: string;
+  cssVar: string;
+  jsonPath: string;
+}) {
   return (
-    <div className="flex items-center gap-3 py-2">
+    <div className={shell.tokenRow}>
       <div
-        className="w-8 h-8 rounded-md border border-gray-200 dark:border-gray-700 shrink-0"
-        style={{ backgroundColor: hex }}
+        className={shell.tokenSwatch}
+        style={{ backgroundColor: `var(${cssVar})` }}
+        title={hex}
       />
       <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-white">{label}</p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono truncate">{tokenName}</p>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500 font-mono">{hex}</p>
+        <p className={shell.tokenTitle}>{label}</p>
+        <p className={shell.tokenMeta}>
+          var({cssVar}) · JSON {jsonPath}
+        </p>
+        <p className={shell.tokenHex}>{hex}</p>
       </div>
     </div>
   );
 }
 
-// ─── Spec row ───────────────────────────────────────────────────────────────
-
 function SpecRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between py-1.5">
-      <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
-      <span className="text-sm font-mono text-gray-900 dark:text-white">{value}</span>
+    <div className={shell.specRow}>
+      <span className={shell.specLabel}>{label}</span>
+      <span className={shell.specValue}>{value}</span>
     </div>
   );
 }
 
-// ─── Main view ──────────────────────────────────────────────────────────────
+function buildInputSnippet(opts: {
+  inputType: InputType;
+  inputState: InputState;
+  showIcon: boolean;
+  iconName: string;
+  labelText: string;
+  placeholderText: string;
+  helperText: string;
+  showHelper: boolean;
+  showRequired: boolean;
+  valueText: string;
+  numberPrefix?: string;
+}): { html: string; css: string } {
+  const {
+    inputType,
+    inputState,
+    showIcon,
+    iconName,
+    labelText,
+    placeholderText,
+    helperText,
+    showHelper,
+    showRequired,
+    valueText,
+    numberPrefix = "+57",
+  } = opts;
+  const numberFloating = isNumberFloatingType(inputType);
+  const stateAttr = INPUT_STATE_ATTR[inputState];
+  const disabled = inputState === "Disabled";
+
+  const baseCss = `/* Input — Figma 2:8432 · tokens Feature 02 */
+.ds-input {
+  --ds-input-radius: 8px;
+  --ds-input-padding-x: 12px;
+  --ds-input-padding-y: 14px;
+  --ds-input-border-w: 1px;
+  --ds-input-current-border: var(--ds-input-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--ds-input-padding-y) var(--ds-input-padding-x);
+  border-radius: var(--ds-input-radius);
+  border: var(--ds-input-border-w) solid var(--ds-input-current-border);
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  line-height: var(--ds-typography-body-md-line-height);
+  width: 320px;
+  position: relative;
+  background: transparent;
+}
+
+.ds-input[data-state="focused"] {
+  --ds-input-current-border: var(--ds-input-border-focus);
+  --ds-input-border-w: 1.5px;
+}
+
+.ds-input[data-state="error"] {
+  --ds-input-current-border: var(--ds-input-border-error);
+}
+
+.ds-input[data-state="disabled"] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.ds-input__native {
+  flex: 1;
+  border: none;
+  outline: none;
+  font: inherit;
+  background: transparent;
+  color: var(--ds-color-control-ink);
+}
+
+.ds-input__floating-label {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  padding: 0 4px;
+  font-size: var(--ds-typography-body-xs-font-size);
+  background: var(--ds-input-surface);
+  color: var(--ds-color-control-ink);
+}
+
+.ds-input__helper {
+  margin-top: 2px;
+  padding-left: 8px;
+  font-size: var(--ds-typography-body-sm-font-size);
+  color: var(--ds-color-control-ink-muted);
+}
+
+.ds-input__helper[data-state="error"] {
+  color: var(--ds-input-text-error);
+}`;
+
+  const iconHtml = showIcon
+    ? `\n  <span class="material-symbols-rounded">${iconName}</span>`
+    : "";
+
+  const floatingHtml =
+    inputType === "Input text"
+      ? `\n  <label class="ds-input__floating-label">${labelText}${showRequired ? " *" : ""}</label>`
+      : "";
+
+  const selectedCountry =
+    COUNTRY_LIST.find((c) => c.code === numberPrefix) || COUNTRY_LIST[0];
+  const flagUrl = getFlagIconUrl(
+    {
+      id: `iso-${selectedCountry.iso2}`,
+      name: selectedCountry.name,
+      iso2: selectedCountry.iso2,
+    },
+    64,
+  );
+  const numberPlaceholder = numberFloating
+    ? placeholderText
+    : placeholderText || "Label";
+  const numberFloatingHtml =
+    numberFloating && labelText
+      ? `\n  <label class="ds-input__floating-label">${labelText}${showRequired ? " *" : ""}</label>`
+      : "";
+
+  let html = "";
+  if (isNumberInputType(inputType)) {
+    html = `<div class="ds-input-number" data-state="${stateAttr}">${numberFloatingHtml}
+  <div class="ds-input-number__cluster">
+  <div class="ds-input-prefix"${disabled ? ' data-disabled="true"' : ""}>
+    <img class="ds-input__flag" src="${flagUrl}" alt="Bandera ${selectedCountry.name}" width="24" height="24" />
+    <span class="material-symbols-rounded" aria-hidden="true">arrow_drop_down</span>
+  </div>
+  <div class="ds-input ds-input--number-field" data-state="${stateAttr}">
+    <input class="ds-input__native" type="text" value="${valueText}" placeholder="${numberPlaceholder}"${disabled ? " disabled" : ""} />
+  </div>
+  </div>
+</div>`;
+  } else {
+    html = `<div class="ds-input" data-state="${stateAttr}" data-has-value="${valueText.trim() ? "true" : "false"}">${floatingHtml}${iconHtml}
+  <input class="ds-input__native" type="text" placeholder="${placeholderText}" value="${valueText}"${disabled ? " disabled" : ""} />
+</div>`;
+  }
+
+  if (showHelper) {
+    html += `\n<p class="ds-input__helper" data-state="${stateAttr === "error" ? "error" : "default"}">${helperText}</p>`;
+  }
+
+  return { html, css: baseCss };
+}
 
 export function InputsView() {
   const { contentPaddingClass } = useControlsPanel();
   const { theme } = useTheme();
-  const tokens = theme === "dark" ? darkTokens : lightTokens;
-
-  const accentBlue = resolveColor(tokens, "global.color.Button color.button-color");
+  const mode = theme === "dark" ? "dark" : "light";
 
   const [inputType, setInputType] = useState<InputType>("Label text");
   const [inputState, setInputState] = useState<InputState>("Default");
@@ -520,6 +581,7 @@ export function InputsView() {
   const [previewFocused, setPreviewFocused] = useState(false);
 
   const showIcon = iconPosition !== "none";
+  const switchOnStyle = { backgroundColor: "var(--ds-color-brand)" } as const;
 
   const effectiveState: InputState =
     inputState === "Default" && previewFocused ? "Focused" : inputState;
@@ -528,130 +590,86 @@ export function InputsView() {
     if (inputState !== "Default") setPreviewFocused(false);
   }, [inputState]);
 
-  const stateColors = useMemo(() => {
-    const t = tokens as any;
-    return [
-      { label: "Default", hex: resolveColor(t, "global.color.Border color.border-primary"), tokenName: "border-primary" },
-      { label: "Focused", hex: resolveColor(t, "global.color.Button color.button-hover"), tokenName: "button-hover (1.5px)" },
-      { label: "Error", hex: resolveColor(t, "global.color.Text colors.text-error"), tokenName: "text-error" },
-      { label: "Disabled", hex: resolveColor(t, "global.color.Border color.border-primary"), tokenName: "border-primary" },
-    ];
-  }, [theme]);
+  const stateColors = useMemo(
+    () =>
+      BORDER_COLOR_DEFS.map((d) => ({
+        label: d.label,
+        cssVar: d.cssVar,
+        jsonPath: d.jsonPath,
+        hex: d.resolve(mode),
+      })),
+    [mode],
+  );
 
-  const textColors = useMemo(() => {
-    const t = tokens as any;
-    return [
-      { label: "Primary", hex: resolveColor(t, "global.color.Text colors.text-primary"), tokenName: "text-primary" },
-      { label: "Secondary", hex: resolveColor(t, "global.color.Text colors.text-secondary"), tokenName: "text-secondary" },
-      { label: "Disabled", hex: resolveColor(t, "global.color.Text colors.text-disabled"), tokenName: "text-disabled" },
-      { label: "Error", hex: resolveColor(t, "global.color.Text colors.text-error"), tokenName: "text-error" },
-    ];
-  }, [theme]);
+  const textColors = useMemo(
+    () =>
+      TEXT_COLOR_DEFS.map((d) => ({
+        label: d.label,
+        cssVar: d.cssVar,
+        jsonPath: d.jsonPath,
+        hex: d.resolve(mode),
+      })),
+    [mode],
+  );
 
-  const codeSnippet = useMemo(() => {
-    const t = tokens as any;
-    const borderPrimary = resolveColor(t, "global.color.Border color.border-primary");
-    const borderFocusHover = resolveColor(t, "global.color.Button color.button-hover");
-    const borderError = resolveColor(t, "global.color.Text colors.text-error");
-    const textPri = resolveColor(t, "global.color.Text colors.text-primary");
-    const textSec = resolveColor(t, "global.color.Text colors.text-secondary");
-    const textDis = resolveColor(t, "global.color.Text colors.text-disabled");
-    const textErr = resolveColor(t, "global.color.Text colors.text-error");
-
-    const isDisabled = inputState === "Disabled";
-    const isError = inputState === "Error";
-    const isFocused = inputState === "Focused";
-
-    const border = isError
-      ? borderError
-      : isFocused
-        ? borderFocusHover
-        : isDisabled
-          ? borderPrimary
-          : borderPrimary;
-
-    const borderW = isFocused && !isError ? 1.5 : 1;
-
-    const color = isDisabled ? textDis : isError ? textErr : textPri;
-    const placeholderColor = isDisabled ? textDis : textSec;
-
-    const indent = "  ";
-    const iconHtml = showIcon
-      ? `\n${indent}<span class="material-symbols-rounded" style="font-size: 20px">${iconName}</span>`
-      : "";
-
-    const floatingLabel = inputType === "Input text"
-      ? `\n${indent}<label style="position: absolute; top: -8px; left: 10px; right: 10px; padding: 0 4px; font-size: 12px; background: #fff; display: flex; flex-wrap: wrap; align-items: center; gap: 2px; box-sizing: border-box; min-width: 0; word-break: break-word; overflow-wrap: break-word;">${labelText}${showRequired ? " *" : ""}</label>`
-      : "";
-
-    const styleLines = [
-      `display: flex`,
-      `align-items: center`,
-      `gap: 8px`,
-      `padding: ${INPUT_PADDING_Y}px ${INPUT_PADDING_X}px`,
-      `border-radius: ${INPUT_RADIUS}px`,
-      `border: ${borderW}px solid ${border}`,
-      `color: ${color}`,
-      `font-family: '${FONT_FAMILY}', sans-serif`,
-      `font-size: 16px`,
-      `line-height: 24px`,
-      `width: 320px`,
-      `position: relative`,
-      isDisabled ? `opacity: 0.7` : null,
-      isDisabled ? `cursor: not-allowed` : null,
-    ]
-      .filter(Boolean)
-      .map((l) => `  ${l};`)
-      .join("\n");
-
-    let html = "";
-    if (inputType === "Number") {
-      html = `<div style="display: flex; width: 320px;">\n${indent}<div style="display: flex; align-items: center; gap: 8px; width: 88px; padding: ${INPUT_PADDING_Y}px ${INPUT_PADDING_X}px; border: ${borderW}px solid ${border}; border-right: none; border-radius: ${INPUT_RADIUS}px 0 0 ${INPUT_RADIUS}px;">\n${indent}  <span>🇨🇴</span>\n${indent}  <span class="material-symbols-rounded" style="font-size: 18px">keyboard_arrow_down</span>\n${indent}</div>\n${indent}<div style="display: flex; align-items: center; flex: 1; padding: ${INPUT_PADDING_Y}px ${INPUT_PADDING_X}px; border: ${borderW}px solid ${border}; border-left: none; border-radius: 0 ${INPUT_RADIUS}px ${INPUT_RADIUS}px 0;">\n${indent}  <input type="text" value="${valueText}" placeholder="${placeholderText}" style="border: none; outline: none; flex: 1; font: inherit; color: inherit; background: transparent;"${isDisabled ? " disabled" : ""} />\n${indent}</div>\n</div>`;
-    } else {
-      html = `<div style="\n${styleLines}\n">${floatingLabel}${iconHtml}\n${indent}<input\n${indent}  type="text"\n${indent}  placeholder="${placeholderText}"\n${indent}  value="${valueText}"\n${indent}  style="border: none; outline: none; flex: 1; font: inherit; color: inherit; background: transparent;"`;
-      if (isDisabled) html += `\n${indent}  disabled`;
-      html += `\n${indent}/>\n</div>`;
-    }
-
-    if (showHelper) {
-      html += `\n<p style="width: 100%; max-width: 320px; box-sizing: border-box; padding-left: 8px; padding-right: 4px; margin-top: 2px; font-size: 14px; line-height: 20px; color: ${isError ? textErr : placeholderColor}; word-break: break-word; overflow-wrap: break-word;">${helperText}</p>`;
-    }
-
-    return html;
-  }, [inputType, inputState, showIcon, iconName, labelText, placeholderText, helperText, showHelper, showRequired, valueText, numberPrefix, tokens]);
+  const codeSnippet = useMemo(
+    () =>
+      buildInputSnippet({
+        inputType,
+        inputState,
+        showIcon,
+        iconName,
+        labelText,
+        placeholderText,
+        helperText,
+        showHelper,
+        showRequired,
+        valueText,
+        numberPrefix,
+      }),
+    [
+      inputType,
+      inputState,
+      showIcon,
+      iconName,
+      labelText,
+      placeholderText,
+      helperText,
+      showHelper,
+      showRequired,
+      valueText,
+      numberPrefix,
+    ],
+  );
 
   return (
-    <div className="flex gap-8">
-      {/* ── Main content ──────────────────────────────────────────────── */}
+    <div className={`${styles.root} flex gap-8`}>
       <div className={`flex-1 min-w-0 ${contentPaddingClass}`}>
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Inputs</h1>
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
-            Explora, entiende y configura el componente input del sistema de diseño.
-          </p>
-        </div>
+        <p className={shell.intro}>
+          Explora, entiende y configura el componente input del sistema de
+          diseño. Colores vía{" "}
+          <code className="font-mono text-[length:inherit]">var(--ds-*)</code>{" "}
+          alineados a Feature 02 (Figma 2:8432).
+        </p>
 
-        {/* ── Preview ─────────────────────────────────────────────────── */}
         <div className="mb-4">
           <div
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl relative overflow-visible min-h-[280px]"
+            className={`${shell.previewCard} overflow-visible`}
             style={{ boxSizing: "content-box" }}
           >
-            <div className="absolute left-0 right-0 top-14 h-px bg-gray-200 dark:bg-gray-800" />
-            <div className="absolute top-3 left-0 right-0 flex items-center justify-between pl-5 pr-3 z-10">
-              <h2 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Preview
-              </h2>
+            <div className={shell.previewDivider} />
+            <div className={shell.previewToolbar}>
+              <h2 className={shell.previewTitle}>Preview</h2>
               <button
+                type="button"
                 onClick={() => setShowCodeModal(true)}
-                className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all overflow-clip shadow-[inset_0px_0px_0px_1px_rgba(1,17,31,0.1),inset_0px_-2px_2px_0px_rgba(1,17,31,0.1)]"
+                className={shell.codeButton}
                 title="View Code"
               >
                 <CodeXml className="w-5 h-5" />
               </button>
             </div>
-            <div className="absolute left-0 right-0 top-16 bottom-0 flex items-center justify-center">
+            <div className={shell.previewStage}>
               <InputPreview
                 inputType={inputType}
                 inputState={effectiveState}
@@ -664,7 +682,6 @@ export function InputsView() {
                 showHelper={showHelper}
                 showRequired={showRequired}
                 numberPrefix={numberPrefix}
-                tokens={tokens}
                 onValueChange={setValueText}
                 onPrefixChange={setNumberPrefix}
                 onFocus={() => {
@@ -678,54 +695,56 @@ export function InputsView() {
           </div>
         </div>
 
-        {/* ── Component Spec ──────────────────────────────────────────── */}
         <div className="flex flex-col gap-4">
-          {/* Typography */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Typography
-            </h3>
-            <div className="space-y-0 divide-y divide-gray-100 dark:divide-gray-800">
-              <SpecRow label="Font family" value={FONT_FAMILY} />
-              <SpecRow label="Label size" value="16px / 24px" />
-              <SpecRow label="Floating label" value="12px" />
-              <SpecRow label="Helper text" value="14px / 20px" />
+          <div className={shell.specCard}>
+            <h3 className={shell.specHeading}>Typography</h3>
+            <div className={shell.specDivider}>
+              <SpecRow
+                label="Font family"
+                value="var(--ds-typography-font-family)"
+              />
+              <SpecRow
+                label="Label size"
+                value="var(--ds-typography-body-md-font-size) / var(--ds-typography-body-md-line-height)"
+              />
+              <SpecRow
+                label="Floating label"
+                value="var(--ds-typography-body-xs-font-size)"
+              />
+              <SpecRow
+                label="Helper text"
+                value="var(--ds-typography-body-sm-font-size) / var(--ds-typography-body-sm-line-height)"
+              />
               <SpecRow label="Font weight" value="400 (Regular)" />
             </div>
           </div>
 
-          {/* Border & Spacing */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Border & Spacing
-            </h3>
-            <div className="space-y-0 divide-y divide-gray-100 dark:divide-gray-800">
-              <SpecRow label="Border radius" value={`${INPUT_RADIUS}px`} />
-              <SpecRow label="Border width" value="1px (1.5px en focus)" />
-              <SpecRow label="Padding X" value={`${INPUT_PADDING_X}px`} />
-              <SpecRow label="Padding Y" value={`${INPUT_PADDING_Y}px`} />
+          <div className={shell.specCard}>
+            <h3 className={shell.specHeading}>Border & Spacing</h3>
+            <div className={shell.specDivider}>
+              <SpecRow label="Border radius" value="var(--ds-input-radius)" />
+              <SpecRow
+                label="Border width"
+                value="var(--ds-input-border-w) (1.5px en focus)"
+              />
+              <SpecRow label="Padding X" value="var(--ds-input-padding-x)" />
+              <SpecRow label="Padding Y" value="var(--ds-input-padding-y)" />
               <SpecRow label="Icon gap" value="8px" />
             </div>
           </div>
 
-          {/* Border Colors (States) */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Border Colors (States)
-            </h3>
-            <div className="space-y-1 divide-y divide-gray-100 dark:divide-gray-800">
+          <div className={shell.specCard}>
+            <h3 className={shell.specHeading}>Border Colors (States)</h3>
+            <div className={shell.specDivider}>
               {stateColors.map((sc) => (
                 <StateColorCard key={sc.label} {...sc} />
               ))}
             </div>
           </div>
 
-          {/* Text Colors */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
-              Text Colors
-            </h3>
-            <div className="space-y-1 divide-y divide-gray-100 dark:divide-gray-800">
+          <div className={shell.specCard}>
+            <h3 className={shell.specHeading}>Text Colors</h3>
+            <div className={shell.specDivider}>
               {textColors.map((tc) => (
                 <StateColorCard key={tc.label} {...tc} />
               ))}
@@ -734,29 +753,27 @@ export function InputsView() {
         </div>
       </div>
 
-      {/* ── Right Panel (Control Panel) ───────────────────────────────── */}
       <ControlsPanelFrame>
         <div className="p-6 space-y-6">
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Controls</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Configure the input properties</p>
+            <h2 className={shell.panelTitle}>Controls</h2>
+            <p className={shell.panelHint}>Configure the input properties</p>
           </div>
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={shell.panelDivider} />
 
-          {/* Input Type */}
-          <SegmentedControl
+          <ControlSelect
             label="Type"
             value={inputType}
             options={[
               { value: "Label text", label: "Default" },
               { value: "Input text", label: "Floating" },
-              { value: "Number", label: "Number" },
+              { value: "Number default", label: "Number default" },
+              { value: "Number floating", label: "Number floating" },
             ]}
             onChange={setInputType}
           />
 
-          {/* State */}
           <SegmentedControl
             label="State"
             value={inputState}
@@ -770,170 +787,166 @@ export function InputsView() {
             onChange={setInputState}
           />
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={shell.panelDivider} />
 
-          {/* Icon toggle */}
-          {inputType !== "Number" && (
+          {!isNumberInputType(inputType) && (
             <div>
               <label className="flex items-center justify-between gap-4">
-                <span className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Icon
-                </span>
+                <span className={shell.panelLabel}>Icon</span>
                 <Switch
                   checked={showIcon}
                   onCheckedChange={(v) => setIconPosition(v ? "left" : "none")}
                   aria-label="Mostrar icono"
-                  style={showIcon ? { backgroundColor: accentBlue } : undefined}
+                  style={showIcon ? switchOnStyle : undefined}
                 />
               </label>
             </div>
           )}
 
-          {/* Icon selector */}
-          {inputType !== "Number" && showIcon && (
+          {!isNumberInputType(inputType) && showIcon && (
             <ControlSelect
               label="Icon"
               value={iconName}
-              options={allMaterialIconNames.map((i) => ({ value: i, label: i.replace(/_/g, " ") }))}
+              options={allMaterialIconNames.map((i) => ({
+                value: i,
+                label: i.replace(/_/g, " "),
+              }))}
               onChange={setIconName}
             />
           )}
 
-          {inputType === "Number" && (
+          {isNumberInputType(inputType) && (
             <div>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              <label className={`${shell.panelLabel} block mb-1.5`}>
                 Prefix
               </label>
               <input
                 type="text"
                 value={numberPrefix}
                 onChange={(e) => setNumberPrefix(e.target.value)}
-                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={shell.panelInput}
               />
             </div>
           )}
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={shell.panelDivider} />
 
-          {/* Required field toggle */}
           {inputType === "Input text" && (
             <div>
               <label className="flex items-center justify-between gap-4">
-                <span className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Required
-                </span>
+                <span className={shell.panelLabel}>Required</span>
                 <Switch
                   checked={showRequired}
                   onCheckedChange={setShowRequired}
                   aria-label="Campo requerido"
-                  style={showRequired ? { backgroundColor: accentBlue } : undefined}
+                  style={showRequired ? switchOnStyle : undefined}
                 />
               </label>
             </div>
           )}
 
-          {/* Label text (for floating label) */}
-          {(inputType === "Input text" || inputType === "Number") && (
+          {(inputType === "Input text" || inputType === "Number floating") && (
             <div>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              <label className={`${shell.panelLabel} block mb-1.5`}>
                 Label Text
               </label>
               <input
                 type="text"
                 value={labelText}
                 onChange={(e) => setLabelText(e.target.value)}
-                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={shell.panelInput}
               />
             </div>
           )}
 
-          {/* Value text (solo en tipo Floating / Input text) */}
+          {inputType === "Number floating" && (
+            <div>
+              <label className="flex items-center justify-between gap-4">
+                <span className={shell.panelLabel}>Required</span>
+                <Switch
+                  checked={showRequired}
+                  onCheckedChange={setShowRequired}
+                  aria-label="Campo requerido"
+                  style={showRequired ? switchOnStyle : undefined}
+                />
+              </label>
+            </div>
+          )}
+
           {inputType === "Input text" && (
             <div>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              <label className={`${shell.panelLabel} block mb-1.5`}>
                 Value
               </label>
               <input
                 type="text"
                 value={valueText}
                 onChange={(e) => setValueText(e.target.value)}
-                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={shell.panelInput}
               />
             </div>
           )}
 
-          {/* Placeholder */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+            <label className={`${shell.panelLabel} block mb-1.5`}>
               Placeholder
             </label>
             <input
               type="text"
               value={placeholderText}
               onChange={(e) => setPlaceholderText(e.target.value)}
-              className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={shell.panelInput}
             />
           </div>
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={shell.panelDivider} />
 
-          {/* Helper text toggle */}
           <div>
             <label className="flex items-center justify-between gap-4">
-              <span className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Helper Text
-              </span>
+              <span className={shell.panelLabel}>Helper Text</span>
               <Switch
                 checked={showHelper}
                 onCheckedChange={setShowHelper}
                 aria-label="Mostrar texto de ayuda"
-                style={showHelper ? { backgroundColor: accentBlue } : undefined}
+                style={showHelper ? switchOnStyle : undefined}
               />
             </label>
           </div>
 
-          {/* Helper text input */}
           {showHelper && (
             <div>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              <label className={`${shell.panelLabel} block mb-1.5`}>
                 Helper / Error Text
               </label>
               <input
                 type="text"
                 value={helperText}
                 onChange={(e) => setHelperText(e.target.value)}
-                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={shell.panelInput}
               />
             </div>
           )}
 
-          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className={shell.panelDivider} />
 
-          {/* Quick reference */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+            <label className={`${shell.panelLabel} block mb-2`}>
               Current Config
             </label>
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 space-y-1.5">
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">Type</span>
-                <span className="text-gray-900 dark:text-white font-medium">{inputType}</span>
+            <div className={shell.configBox}>
+              <div className={shell.configRow}>
+                <span className={shell.configKey}>Type</span>
+                <span className={shell.configVal}>{inputType}</span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">State</span>
-                <span className="text-gray-900 dark:text-white font-medium">{inputState}</span>
+              <div className={shell.configRow}>
+                <span className={shell.configKey}>State</span>
+                <span className={shell.configVal}>{inputState}</span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">Font size</span>
-                <span className="text-gray-900 dark:text-white font-mono">16px</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">Padding</span>
-                <span className="text-gray-900 dark:text-white font-mono">{INPUT_PADDING_Y}px {INPUT_PADDING_X}px</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">Radius</span>
-                <span className="text-gray-900 dark:text-white font-mono">{INPUT_RADIUS}px</span>
+              <div className={shell.configRow}>
+                <span className={shell.configKey}>Border (focus)</span>
+                <span className={shell.configValMono}>
+                  --ds-input-border-focus
+                </span>
               </div>
             </div>
           </div>
@@ -944,7 +957,8 @@ export function InputsView() {
         <CodeModal
           onClose={() => setShowCodeModal(false)}
           title={`Input — ${inputType} / ${inputState}`}
-          code={codeSnippet}
+          html={codeSnippet.html}
+          css={codeSnippet.css}
         />
       )}
     </div>

@@ -1,0 +1,86 @@
+/**
+ * Dividers (Figma 3031:40774) — línea 1px; color vía --ds-divider-color.
+ */
+
+.root {
+  --ds-divider-preview-width: 320px;
+  --ds-divider-inset: 16px;
+  --ds-divider-thickness: 1px;
+  --ds-divider-color: var(--ds-input-border);
+}
+
+.previewWrap {
+  width: 100%;
+  max-width: var(--ds-divider-preview-width);
+  min-width: 0;
+}
+
+.host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.host[data-variant="inset"] {
+  padding-left: var(--ds-divider-inset);
+}
+
+.host[data-variant="middle-inset"] {
+  padding-left: var(--ds-divider-inset);
+  padding-right: var(--ds-divider-inset);
+}
+
+.line {
+  display: block;
+  width: 100%;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-top: var(--ds-divider-thickness) solid var(--ds-divider-color);
+}
+
+.previewCardGallery {
+  overflow: visible;
+  min-height: 220px;
+}
+
+.previewStageGallery {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 1rem 1.25rem 1.25rem;
+  overflow-x: visible;
+  overflow-y: auto;
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  min-width: min(100%, var(--ds-divider-preview-width));
+  max-width: var(--ds-divider-preview-width);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.galleryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.galleryLabel {
+  font-size: var(--ds-typography-body-xs-font-size);
+  line-height: var(--ds-typography-body-xs-line-height);
+  font-family: var(--ds-typography-font-family);
+  color: var(--ds-color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

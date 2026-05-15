@@ -394,15 +394,64 @@ export function getFoundationTextColors(): FoundationColor[] {
   return getFoundationColors().filter((c) => c.category === "Text");
 }
 
+type JsonSemanticColorGroup =
+  | "Text colors"
+  | "Border color"
+  | "Background"
+  | "Button color";
+
+export function resolveJsonBorderColor(
+  tokenName: string,
+  mode: "light" | "dark",
+): string {
+  return resolveJsonColor("Border color", tokenName, mode);
+}
+
 /** Hex resuelto desde JSON Figma para un par grupo / token (light / dark). */
 export function resolveJsonColor(
-  group: "Text colors" | "Border color" | "Background",
+  group: JsonSemanticColorGroup,
   tokenName: string,
   mode: "light" | "dark",
 ): string {
   const root = mode === "dark" ? darkTokens : lightTokens;
   return resolveHex(
     (root as any)?.global?.color?.[group]?.[tokenName],
+    root,
+  );
+}
+
+/** Atoms / controles — `global.color.Button color.*` (tokens-3). */
+export function resolveJsonButtonColor(
+  tokenName: string,
+  mode: "light" | "dark",
+): string {
+  return resolveJsonColor("Button color", tokenName, mode);
+}
+
+/** Atoms / controles — `global.color.Text colors.*` (tokens-3). */
+export function resolveJsonTextColor(
+  tokenName: string,
+  mode: "light" | "dark",
+): string {
+  return resolveJsonColor("Text colors", tokenName, mode);
+}
+
+/** Atoms / controles — `global.color.Background.*` (tokens-3). */
+export function resolveJsonBackgroundColor(
+  tokenName: string,
+  mode: "light" | "dark",
+): string {
+  return resolveJsonColor("Background", tokenName, mode);
+}
+
+/** Escala `global.Primary.Brand.*` (p. ej. hover outline blue). */
+export function resolveJsonBrandColor(
+  scaleKey: string,
+  mode: "light" | "dark",
+): string {
+  const root = mode === "dark" ? darkTokens : lightTokens;
+  return resolveHex(
+    (root as any)?.global?.Primary?.Brand?.[scaleKey],
     root,
   );
 }

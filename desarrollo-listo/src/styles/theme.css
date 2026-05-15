@@ -42,6 +42,17 @@
   /* Shell catálogo (Feature 02): una sola fuente para fondos página / cromo — usar vía var(--layout-*) o --ds-* */
   --layout-page-bg: #fafafa;
   --layout-chrome-bg: #ffffff;
+  /**
+   * Primitivos Feature 02 (Ligth_mode.tokens-3.json) — consumir vía --ds-* en componentes.
+   * Brand.700 = Button color.button-color; neutral.950 = Text colors.text-primary.
+   */
+  --foundation-brand-700: #003d6d;
+  --foundation-brand-600: #0c5a99;
+  --foundation-text-primary: #001525;
+  --foundation-text-secondary: #344054;
+  --foundation-border-primary: #d0d5dd;
+  --foundation-text-disabled: #98a2b3;
+  --foundation-text-error: #d92d20;
 }
 
 .dark {
@@ -81,6 +92,13 @@
   --sidebar-ring: oklch(0.439 0 0);
   --layout-page-bg: #0a0a0a;
   --layout-chrome-bg: #111111;
+  --foundation-brand-700: #003d6d;
+  --foundation-brand-600: #0c5a99;
+  --foundation-text-primary: #f9fafb;
+  --foundation-text-secondary: #d0d5dd;
+  --foundation-border-primary: #475467;
+  --foundation-text-disabled: #667085;
+  --foundation-text-error: #f97066;
 }
 
 @theme inline {

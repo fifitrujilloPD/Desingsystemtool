@@ -1,0 +1,272 @@
+/**
+ * Slider range (Figma 981:288514) — dual handle, label variants.
+ */
+
+.root {
+  --ds-slider-width: 320px;
+  --ds-slider-track-height: 8px;
+  --ds-slider-thumb-size: 24px;
+  --ds-slider-thumb-border: 2px;
+  --ds-slider-focus-ring: 1.5px;
+  --ds-slider-track-offset-y: 8px;
+  --ds-slider-host-height-compact: 24px;
+  --ds-slider-host-height-labeled: 56px;
+  --ds-slider-label-offset-y: 42.5px;
+  --ds-slider-tooltip-gap: 8px;
+  --ds-slider-tooltip-px: 12px;
+  --ds-slider-tooltip-py: 8px;
+  --ds-slider-tooltip-radius: 8px;
+  --ds-slider-tooltip-min-width: 42px;
+  --ds-slider-track-bg: var(--ds-color-brand-ships, #e8f2fa);
+  --ds-slider-fill-bg: var(--ds-color-brand, #003d6d);
+  --ds-slider-thumb-bg: var(--ds-color-surface-elevated, #ffffff);
+  --ds-slider-thumb-border-color: var(--ds-color-brand-hover, #0c5a99);
+  --ds-slider-focus-ring-color: var(--ds-color-brand-hover, #0c5a99);
+  --ds-slider-label-color: var(--ds-color-control-ink);
+  --ds-slider-tooltip-bg: var(--ds-color-surface-elevated);
+  --ds-slider-tooltip-border: var(--ds-color-border-default);
+  --ds-slider-tooltip-text: var(--ds-color-control-ink-muted);
+  --ds-slider-thumb-shadow:
+    0 4px 8px -2px color-mix(in srgb, var(--ds-color-control-ink) 10%, transparent),
+    0 2px 4px -2px color-mix(in srgb, var(--ds-color-control-ink) 6%, transparent);
+  --ds-slider-tooltip-shadow:
+    0 12px 16px -4px color-mix(in srgb, var(--ds-color-control-ink) 8%, transparent),
+    0 4px 6px -2px color-mix(in srgb, var(--ds-color-control-ink) 3%, transparent);
+}
+
+.host {
+  position: relative;
+  width: 100%;
+  max-width: var(--ds-slider-preview-width, var(--ds-slider-width));
+  box-sizing: border-box;
+}
+
+.host[data-label="false"] {
+  height: var(--ds-slider-host-height-compact);
+}
+
+.host[data-label="bottom"],
+.host[data-label="top-floating"] {
+  height: var(--ds-slider-host-height-labeled);
+}
+
+.trackArea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--ds-slider-track-offset-y);
+  height: var(--ds-slider-track-height);
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ds-radius-full, 9999px);
+  background: var(--ds-slider-track-bg);
+}
+
+.range {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 1;
+  border-radius: var(--ds-radius-full, 9999px);
+  background: var(--ds-slider-fill-bg);
+  transition:
+    left 0.15s ease,
+    width 0.15s ease;
+}
+
+.thumb {
+  position: absolute;
+  top: calc(
+    var(--ds-slider-track-offset-y) + var(--ds-slider-track-height) / 2 -
+      var(--ds-slider-thumb-size) / 2
+  );
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-slider-thumb-size);
+  height: var(--ds-slider-thumb-size);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  transform: translateX(-50%);
+  cursor: default;
+  pointer-events: none;
+  touch-action: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.host[data-interactive="true"] .thumb {
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.host[data-interactive="true"] .thumb[data-dragging="true"] {
+  cursor: grabbing;
+}
+
+.host[data-interactive="true"] .trackArea {
+  cursor: pointer;
+  touch-action: none;
+}
+
+.host[data-dragging="true"] .range {
+  transition: none;
+}
+
+/* Figma Handle: bg-container + border 2px button-hover + shadow-md */
+.thumbInner {
+  display: block;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: var(--ds-slider-thumb-size);
+  height: var(--ds-slider-thumb-size);
+  border-radius: 50%;
+  background-color: var(--ds-slider-thumb-bg);
+  border: var(--ds-slider-thumb-border) solid var(--ds-slider-thumb-border-color);
+  box-shadow: var(--ds-slider-thumb-shadow);
+}
+
+/* Figma _Control handle: anillo 1.5px solo en focus / arrastre */
+.thumb::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--ds-slider-focus-ring));
+  border: var(--ds-slider-focus-ring) solid var(--ds-slider-focus-ring-color);
+  border-radius: var(--ds-spacing-lg, 12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.thumb:focus-visible::before,
+.thumb[data-dragging="true"]::before {
+  opacity: 1;
+}
+
+.thumbLabel {
+  position: absolute;
+  top: var(--ds-slider-label-offset-y);
+  transform: translate(-50%, -50%);
+  color: var(--ds-slider-label-color);
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  font-weight: 500;
+  line-height: var(--ds-typography-body-md-line-height);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.thumbLabel[data-align="end"] {
+  transform: translate(-100%, -50%);
+  text-align: right;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + var(--ds-slider-tooltip-gap));
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: var(--ds-slider-tooltip-min-width);
+  filter: drop-shadow(var(--ds-slider-tooltip-shadow));
+  pointer-events: none;
+}
+
+.tooltipContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ds-slider-tooltip-py) var(--ds-slider-tooltip-px);
+  border-radius: var(--ds-slider-tooltip-radius);
+  background: var(--ds-slider-tooltip-bg);
+  border: 1px solid var(--ds-slider-tooltip-border);
+  color: var(--ds-slider-tooltip-text);
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-xs-font-size);
+  font-weight: 500;
+  line-height: var(--ds-slider-tooltip-line-height, 16px);
+  white-space: nowrap;
+}
+
+/* Preview */
+
+.previewWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
+  padding: 1rem 0;
+}
+
+.previewCardLabeled {
+  overflow: visible;
+  min-height: auto;
+  height: auto;
+  padding-bottom: 1.25rem;
+}
+
+.previewStageLabeled {
+  position: relative;
+  top: auto;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  margin-top: 4rem;
+  min-height: 0;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.25rem 1.5rem;
+  overflow: visible;
+}
+
+.host[data-label="top-floating"] {
+  overflow: visible;
+}
+
+.previewCardGallery {
+  overflow: visible;
+  min-height: auto;
+  height: auto;
+}
+
+.previewStageGallery {
+  position: relative;
+  top: auto;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  margin-top: 4rem;
+  min-height: 0;
+  height: auto;
+  padding: 1rem 1.25rem 1.5rem;
+  overflow: visible;
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.galleryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.galleryLabel {
+  font-size: var(--ds-typography-body-xs-font-size);
+  font-weight: 500;
+  color: var(--ds-color-control-ink-muted);
+  font-family: var(--ds-typography-font-family);
+}

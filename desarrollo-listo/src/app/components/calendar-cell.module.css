@@ -1,0 +1,204 @@
+/**
+ * Calendar cell (Figma 981:282277) — 40×40, building block para Date picker.
+ */
+
+.root {
+  --ds-cal-cell-size: 40px;
+  --ds-cal-cell-radius: 9999px;
+  --ds-cal-cell-dot-size: 4px;
+  --ds-cal-cell-dot-gap: 2px;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-cal-cell-size);
+  height: var(--ds-cal-cell-size);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+  font-family: var(--ds-typography-font-family);
+}
+
+.cell:focus-visible {
+  outline: 2px solid var(--ds-cal-cell-selected-bg);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.cell:disabled {
+  cursor: not-allowed;
+}
+
+.day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 20px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--ds-cal-cell-day);
+  z-index: 1;
+}
+
+.dot {
+  width: var(--ds-cal-cell-dot-size);
+  height: var(--ds-cal-cell-dot-size);
+  margin-top: var(--ds-cal-cell-dot-gap);
+  border-radius: var(--ds-cal-cell-radius);
+  background: var(--ds-cal-cell-dot);
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.cell[data-has-dot="false"] .dot {
+  display: none;
+}
+
+/* Surface layers */
+
+.cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ds-cal-cell-radius);
+  background: transparent;
+  pointer-events: none;
+}
+
+.cell[data-type="inactive"][data-state="hover"]::before,
+.cell[data-type="today"][data-state="hover"]::before {
+  background: var(--ds-cal-cell-hover-bg);
+}
+
+.cell[data-type="selected"]::before {
+  background: var(--ds-cal-cell-selected-bg);
+  border-radius: var(--ds-cal-cell-radius);
+}
+
+.cell[data-type="selected"][data-state="hover"]::before {
+  background: var(--ds-cal-cell-selected-hover-bg);
+}
+
+.cell[data-type="active"]::before {
+  background: var(--ds-cal-cell-range-bg);
+  border-radius: 0;
+}
+
+.cell[data-range="start"]::before {
+  border-radius: var(--ds-cal-cell-radius) 0 0 var(--ds-cal-cell-radius);
+}
+
+.cell[data-range="end"]::before {
+  border-radius: 0 var(--ds-cal-cell-radius) var(--ds-cal-cell-radius) 0;
+}
+
+.cell[data-range="single"]::before {
+  border-radius: var(--ds-cal-cell-radius);
+}
+
+/* Typography per type/state */
+
+.cell[data-type="inactive"][data-state="default"] .day,
+.cell[data-type="inactive"][data-state="hover"] .day,
+.cell[data-type="today"][data-state="default"] .day,
+.cell[data-type="today"][data-state="hover"] .day {
+  color: var(--ds-cal-cell-day-active);
+  font-weight: 400;
+}
+
+.cell[data-type="today"][data-state="default"] .day {
+  font-weight: 500;
+  color: var(--ds-cal-cell-day);
+}
+
+.cell[data-type="selected"] .day,
+.cell[data-type="selected"] .dot {
+  color: var(--ds-cal-cell-selected-fg);
+}
+
+.cell[data-type="selected"] .dot {
+  background: var(--ds-cal-cell-selected-fg);
+}
+
+.cell[data-type="selected"][data-state="disabled"] .day,
+.cell[data-type="selected"][data-state="disabled"] .dot {
+  color: var(--ds-cal-cell-disabled-fg);
+}
+
+.cell[data-type="selected"][data-state="disabled"] .dot {
+  background: var(--ds-cal-cell-disabled-fg);
+}
+
+.cell[data-type="selected"][data-state="disabled"]::before {
+  background: transparent;
+}
+
+.cell[data-type="active"] .day,
+.cell[data-type="active"] .dot {
+  color: var(--ds-cal-cell-day-active);
+}
+
+.cell[data-state="disabled"]:not([data-type="selected"]) .day,
+.cell[data-state="disabled"]:not([data-type="selected"]) .dot {
+  color: var(--ds-cal-cell-disabled-fg);
+}
+
+.cell[data-state="disabled"]:not([data-type="selected"]) .dot {
+  background: var(--ds-cal-cell-disabled-fg);
+}
+
+.cell[data-type="active"][data-state="disabled"]::before {
+  background: var(--ds-cal-cell-range-bg-disabled);
+}
+
+/* Gallery */
+
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(4, var(--ds-cal-cell-size));
+  gap: 16px 24px;
+  width: fit-content;
+}
+
+.matrixColHeader {
+  font-size: var(--ds-typography-body-xs-font-size);
+  font-weight: 500;
+  color: var(--ds-color-control-ink-muted);
+  text-align: center;
+  font-family: var(--ds-typography-font-family);
+}
+
+.matrixRowHeader {
+  display: flex;
+  align-items: center;
+  height: var(--ds-cal-cell-size);
+  font-size: var(--ds-typography-body-xs-font-size);
+  font-weight: 500;
+  color: var(--ds-color-control-ink-muted);
+  font-family: var(--ds-typography-font-family);
+  white-space: nowrap;
+  padding-right: 8px;
+}
+
+.matrixWithHeaders {
+  display: grid;
+  grid-template-columns: auto repeat(4, var(--ds-cal-cell-size));
+  gap: 16px 24px;
+  align-items: center;
+}
+
+.previewRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}

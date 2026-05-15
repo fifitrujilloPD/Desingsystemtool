@@ -18,6 +18,19 @@
   /* Marca / acción */
   --ds-color-primary: var(--primary);
   --ds-color-on-primary: var(--primary-foreground);
+  /** Marca interactiva (JSON Button color.button-color → Brand.700) */
+  --ds-color-brand: var(--foundation-brand-700);
+  --ds-color-brand-hover: var(--foundation-brand-600);
+  /** Texto de controles de formulario (JSON Text colors.text-primary / text-secondary) */
+  --ds-color-control-ink: var(--foundation-text-primary);
+  --ds-color-control-ink-muted: var(--foundation-text-secondary);
+  /** Inputs (Figma 2:8432) — bordes y texto semántico */
+  --ds-input-border: var(--foundation-border-primary);
+  --ds-input-border-focus: var(--ds-color-brand-hover);
+  --ds-input-border-error: var(--foundation-text-error);
+  --ds-input-text-disabled: var(--foundation-text-disabled);
+  --ds-input-text-error: var(--foundation-text-error);
+  --ds-input-surface: var(--ds-color-surface-elevated);
   --ds-color-accent: var(--accent);
   --ds-color-on-accent: var(--accent-foreground);
 

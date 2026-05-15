@@ -89,8 +89,10 @@ export function Sidebar() {
 
                 {/* Children */}
                 <div
-                  className={`overflow-hidden transition-all duration-200 ${
-                    isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                  className={`transition-all duration-200 ${
+                    isOpen
+                      ? "opacity-100"
+                      : "max-h-0 overflow-hidden opacity-0"
                   }`}
                 >
                   <div className="ml-5 space-y-0.5 border-l border-[var(--ds-color-border-default)] py-1 pl-3">

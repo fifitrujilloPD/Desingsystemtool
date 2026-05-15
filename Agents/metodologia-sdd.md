@@ -62,9 +62,21 @@ Si el usuario trae **`@Agents/fullstack-design-system`** u otro contexto de impl
 
 ---
 
+## Una task por componente (Atoms y catálogo)
+
+En features de **componentes** (p. ej. Feature 04 — Atoms), **cada átomo es un módulo distinto** y debe tener **su propio archivo** en `Features/feature-NN-*/tasks/`:
+
+- **Prohibido** agrupar varios átomos en una sola task (ej. “Inputs + Search + Slider” o “Radio + Checkbox + Switch”).
+- **Obligatorio:** un `.md` por átomo con nombre `task_XX_<slug_atom>.md`, enlace Figma, `Node ID` y bloque MCP (ver abajo).
+- Si el átomo **ya existe** en `desarrollo-listo/` (Buttons, Inputs, Badges, Radio, Checkbox, Tabs, Switch), la task debe declarar **modo revisión**: validar contra Figma, alinear `--ds-*` y estructura; no reimplementar salvo deuda crítica (`taskType: CHANGE_ARTIFACT` en MCP).
+- Átomos nuevos: `taskType: CREATE_ARTIFACT`.
+- Índice maestro de enlaces: `Features/feature-04-atoms/insumos/README.md` y charter `feature_04_atoms.md` §2.
+
+---
+
 ## Convención de fuente Figma + MCP en tasks
 
-Toda task de `Features/**/tasks/*.md` que se apoye en un **frame Figma específico** (Foundations, Atoms, Molecules, Organisms, plantillas, etc.) **debe declarar la fuente y el uso del MCP de Figma** como parte del contrato. Esta convención nace de `task_08_icons_alert.md` y se replica en `task_07_icons_file.md`; cualquier task nueva con referencia visual debe seguir el mismo molde.
+Toda task de `Features/**/tasks/*.md` que se apoye en un **frame Figma específico** (Foundations, Atoms, Molecules, Organisms, plantillas, etc.) **debe declarar la fuente y el uso del MCP de Figma** como parte del contrato. Esta convención nace de `task_08_icons_alert.md` (Feature 03) y se aplica a **cada** task de átomo en Feature 04; cualquier task nueva con referencia visual debe seguir el mismo molde.
 
 ### Estructura mínima requerida en el `.md` de la task
 
@@ -98,7 +110,7 @@ Los **charters** y las **tasks** por épica viven bajo `Features/feature-NN-<nom
 | Carpeta | Rol |
 |---------|-----|
 | `informa/Feature-NN/` | Documento maestro de la feature (objetivo, alcance, tabla de tasks). |
-| `tasks/` | Tasks ejecutables (una o más por archivo); convención Figma + MCP cuando aplique. |
+| `tasks/` | Tasks ejecutables (**un componente por archivo** en Atoms/Molecules; convención Figma + MCP cuando aplique). |
 | `insumos/` | JSON, enlaces Figma, assets exportados referenciados por las tasks. |
 | `Ejecuciones/` | Informes de ejecución por ola (fecha, archivos tocados, tests, gaps). |
 
