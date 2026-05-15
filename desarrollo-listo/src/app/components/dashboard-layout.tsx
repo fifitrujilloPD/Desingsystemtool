@@ -11,7 +11,7 @@ export function DashboardLayout() {
       <ControlsPanelProvider>
         <div className="flex">
           <Sidebar />
-          <main className="mt-16 ml-64 flex-1 p-8 pt-4">
+          <main className="mt-16 ml-64 flex min-h-0 flex-1 flex-col p-8 pt-4">
             <CatalogModuleChrome>
               <Outlet />
             </CatalogModuleChrome>
