@@ -117,8 +117,8 @@
 }
 
 .matrix {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1rem 0.75rem;
   width: 100%;
   max-width: calc(3 * var(--ds-file-min-width) + 2 * 12px);
