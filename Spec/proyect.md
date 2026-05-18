@@ -45,7 +45,16 @@ La herramienta se construye y se estructura bajo **Atomic Design** como metodolo
 
 **Regla transversal:** la navegación, los nombres y la documentación en la app deben **respetar** esta jerarquía salvo que una spec de dominio documente una excepción temporal y su plan de migración.
 
-**Estado actual del producto (referencia):** la aplicación incluye vistas de foundations (colores, tipografía, espaciado, iconos), vistas de átomos (botones, inputs, badges, radio, checkbox, tabs, switch, etc.) y secciones placeholder o en expansión para moléculas y organismos, según evolucione el roadmap.
+**Estado actual del producto (referencia):** la aplicación incluye vistas de **Foundations** (colores, tipografía, espaciado, iconos Material / Alert / File / Flags), vistas de **átomos** en catálogo (`/atoms/...`, Feature 04), y **Molecules** con catálogo ola 1 en rutas dedicadas (`molecule-catalog-routes.ts`, sidenav solo con esas 4 moléculas, placeholders con layout Inputs). **Feature 05** (`Features/feature-05-molecules/`):
+
+| Molécula | Node Figma | Átomos / foundations que compone |
+|----------|------------|----------------------------------|
+| Date picker menu | `981:283052` | Button, Input, Calendar cell; iconos; tipografía y color |
+| File upload item base | `978:299288` | Bar progress, Circle progress, File icons, Checkbox, Buttons; tipografía y color |
+| Snackbar | `78:43989` | Alert icons; tipografía y color |
+| Button toggle | `719:257900` | Buttons; tipografía y color |
+
+Organismos: sección en expansión según roadmap.
 
 ---
 
@@ -79,7 +88,7 @@ La herramienta se construye y se estructura bajo **Atomic Design** como metodolo
 | **`dist/`** | Salida de **`npm run build`** en la raíz (configurado en `vite.config.ts`). Regenerable. | `.gitignore` |
 | **`node_modules/`** | Dependencias de **`npm i`** en la raíz (convención npm). No editar a mano. | `package.json` / lockfile |
 | **`vite.config.ts`**, **`package.json`** | Configuración de build y dependencias en la raíz (app React). | — |
-| **`Features/`** | Registro por feature: `informa/` (charter `feature_*`), **`tasks/`** (tareas `.md`), **`Ejecuciones/`** (informes de resultado; p. ej. un único `ejecucion_feature_*` por cierre de ciclo). No sustituye `Spec/` ni el código en `desarrollo-listo/`. | Contenido propio de cada subcarpeta. |
+| **`Features/`** | Registro por feature: `informa/` (charter `feature_*`), **`tasks/`** (tareas `.md`), **`Ejecuciones/`** (informes de resultado). Épicas activas: Feature 04 (átomos), **Feature 05 (moléculas — ola 1: Date picker menu, File upload item base, Snackbar, Button toggle)**. No sustituye `Spec/` ni el código en `desarrollo-listo/`. | `Features/feature-04-atoms/`, `Features/feature-05-molecules/`; charter `feature_05_molecules.md`. |
 | **`guidelines/`** | *(Eliminada)* Plantilla genérica; criterio en **`Spec/`** y **`Agents/`**. | — |
 
 ### 5.2 Política explícita (estandarización)

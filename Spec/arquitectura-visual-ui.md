@@ -129,7 +129,7 @@ Patrones recurrentes en vistas (`*-view.tsx`):
 |-------|-------------------------|
 | Foundations | Páginas Colors, Typography, Spacing, **Borders** (`/borders` — Feature 03 / `task_05_borders_foundation.md`), Icons (cuadrículas, tablas, swatches). |
 | Atoms | Vistas bajo `/atoms/...`: rejilla de previews + panel de controles estándar. |
-| Molecules / Organisms | Misma línea visual: shell compartido; contenido específico cuando exista ruta. |
+| Molecules / Organisms | Misma línea visual y **mismo layout de catálogo que Atoms** (referencia: `inputs-view.tsx` — preview card, spec cards, `ControlsPanelFrame`); ver Feature 05 §1.2. |
 
 ---
 
@@ -182,6 +182,8 @@ Toda la app bajo la carpeta padre **`desarrollo-listo/`** (ver **`Spec/proyect.m
 | **`desarrollo-listo/src/main.tsx`** | Bootstrap de React. |
 
 Cualquier **nueva vista** de documentación de componentes debería ubicarse bajo `desarrollo-listo/src/app/components/` y seguir los patrones de layout de las secciones anteriores de esta spec.
+
+**Molecules (Feature 05, ola 1):** catálogo en `molecule-catalog-routes.ts`; sidenav solo con las cuatro moléculas de la ola; `/molecules` redirige al primer ítem. Layout de catálogo: **`inputs-view.tsx`** (§1.2 del charter).
 
 ---
 

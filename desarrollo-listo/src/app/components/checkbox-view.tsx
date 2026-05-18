@@ -94,7 +94,7 @@ const CHECK_SVG =
 const INDETERMINATE_SVG =
   '<svg class="ds-checkbox__icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 13H5v-2h14v2z"/></svg>';
 
-function CheckboxPreview({
+export function CheckboxPreview({
   checkboxState,
   checkboxType,
   labelText,

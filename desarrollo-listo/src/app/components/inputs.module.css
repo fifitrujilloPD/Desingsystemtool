@@ -5,7 +5,7 @@
 .root {
   --ds-input-radius: 8px;
   --ds-input-padding-x: 12px;
-  --ds-input-padding-y: 14px;
+  --ds-input-padding-y: 10px;
   --ds-input-max-width: 320px;
   --ds-input-icon-gap: 8px;
   --ds-input-border-w: 1px;

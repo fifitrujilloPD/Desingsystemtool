@@ -93,7 +93,7 @@ const COLOR_DEFS = [
   },
 ] as const;
 
-function barThemeVars(opts: {
+export function barThemeVars(opts: {
   mode: "light" | "dark";
   previewWidth: PreviewWidth;
 }): React.CSSProperties {
@@ -125,7 +125,7 @@ function barThemeVars(opts: {
   };
 }
 
-function BarProgressPreview({
+export function BarProgressPreview({
   style,
   value,
 }: {

@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Palette, Circle, Grid, Boxes } from "lucide-react";
 import { ATOM_CATALOG_ROUTES } from "../data/atom-catalog-routes";
+import { MOLECULE_CATALOG_ROUTES } from "../data/molecule-catalog-routes";
 
 /** Ítem de navegación (hoja). */
 export interface NavTreeItem {
@@ -49,12 +50,11 @@ export const NAV_CATEGORIES: NavCategory[] = [
     id: "molecules",
     label: "Molecules",
     icon: Grid,
-    children: [
-      { id: "cards", label: "Cards", path: "/molecules" },
-      { id: "forms", label: "Forms", path: "/molecules/forms" },
-      { id: "modals", label: "Modals", path: "/molecules/modals" },
-      { id: "dropdowns", label: "Dropdowns", path: "/molecules/dropdowns" },
-    ],
+    children: MOLECULE_CATALOG_ROUTES.map((route) => ({
+      id: route.id,
+      label: route.label,
+      path: route.path,
+    })),
   },
   {
     id: "organisms",
@@ -99,9 +99,22 @@ export function resolveNavModuleMeta(pathname: string): NavModuleMeta {
   if (normalized.startsWith("/atoms")) {
     return { atomicModule: "Atoms", pageTitle: "Atoms" };
   }
-  const molecules = NAV_CATEGORIES.find((c) => c.id === "molecules");
-  if (normalized.startsWith("/molecules") && molecules) {
-    return { atomicModule: molecules.label, pageTitle: "Molecules" };
+  const moleculeEntry = MOLECULE_CATALOG_ROUTES.find(
+    (r) => r.path === normalized,
+  );
+  if (moleculeEntry) {
+    return { atomicModule: "Molecules", pageTitle: moleculeEntry.label };
+  }
+
+  if (normalized === "/molecules") {
+    return {
+      atomicModule: "Molecules",
+      pageTitle: MOLECULE_CATALOG_ROUTES[0]?.label ?? "Molecules",
+    };
+  }
+
+  if (normalized.startsWith("/molecules")) {
+    return { atomicModule: "Molecules", pageTitle: "Molecules" };
   }
   const organisms = NAV_CATEGORIES.find((c) => c.id === "organisms");
   if (normalized.startsWith("/organisms") && organisms) {

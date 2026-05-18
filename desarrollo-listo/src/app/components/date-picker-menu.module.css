@@ -1,0 +1,254 @@
+/**
+ * Date picker menu (Figma 981:283052) — panel compuesto.
+ */
+
+.root {
+  --ds-dpm-width: 328px;
+  --ds-dpm-radius: 12px;
+  --ds-dpm-pad-x: 24px;
+  --ds-dpm-pad-y: 20px;
+  --ds-dpm-shadow:
+    0 20px 24px -4px color-mix(in srgb, var(--ds-color-control-ink) 8%, transparent),
+    0 8px 8px -4px color-mix(in srgb, var(--ds-color-control-ink) 3%, transparent);
+}
+
+.panel {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  width: fit-content;
+  max-width: 100%;
+  border-radius: var(--ds-dpm-radius);
+  border: 1px solid var(--ds-color-border-default);
+  background: var(--ds-dpm-surface, var(--ds-color-surface-elevated));
+  box-shadow: var(--ds-dpm-shadow);
+  font-family: var(--ds-typography-font-family);
+}
+
+.panel[data-breakpoint="desktop"][data-type="single"] {
+  min-height: 464px;
+}
+
+.panel[data-breakpoint="mobile"],
+.panel[data-type="dual"] {
+  min-height: 0;
+  height: fit-content;
+}
+
+.presetCol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--ds-dpm-pad-y) 16px;
+  border-right: 1px solid var(--ds-color-border-default);
+  min-width: 140px;
+}
+
+.presetLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-size: var(--ds-typography-body-sm-font-size);
+  line-height: var(--ds-typography-body-sm-line-height);
+  font-weight: 500;
+  color: var(--ds-color-brand);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.presetLink:hover {
+  background: var(--ds-dpm-hover, var(--ds-color-surface-elevated));
+}
+
+.mainCol {
+  display: flex;
+  flex-direction: column;
+  width: var(--ds-dpm-width);
+  min-width: var(--ds-dpm-width);
+}
+
+.content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  padding: var(--ds-dpm-pad-y) var(--ds-dpm-pad-x);
+  min-height: 0;
+}
+
+.monthRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 280px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ds-color-control-ink-muted);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.monthNav:hover {
+  background: var(--ds-dpm-hover, var(--ds-color-surface-elevated));
+}
+
+.monthNavIcon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.monthLabel {
+  margin: 0;
+  font-size: var(--ds-typography-body-md-font-size);
+  line-height: var(--ds-typography-body-md-line-height);
+  font-weight: 500;
+  color: var(--ds-color-control-ink-muted);
+  text-align: center;
+}
+
+.monthLabelBtn {
+  margin: 0;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  font-family: var(--ds-typography-font-family);
+  font-size: var(--ds-typography-body-md-font-size);
+  line-height: var(--ds-typography-body-md-line-height);
+  font-weight: 500;
+  color: var(--ds-color-control-ink-muted);
+  text-align: center;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.monthLabelBtn:hover {
+  background: var(--ds-dpm-hover, var(--ds-color-surface-elevated));
+}
+
+.actionsRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.actionsRow[data-breakpoint="mobile"] {
+  flex-direction: column;
+}
+
+.inputGrow {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Átomo Input: ancho fluido en fila flex (tokens en inputs.module.css .root). */
+.inputGrow > * {
+  max-width: none;
+  width: 100%;
+}
+
+.dualInputs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.dualSep {
+  flex-shrink: 0;
+  font-size: var(--ds-typography-body-md-font-size);
+  line-height: var(--ds-typography-body-md-line-height);
+  color: var(--ds-color-control-ink-muted);
+}
+
+.presetRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px 0;
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, var(--ds-cal-cell-size));
+  width: fit-content;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-top: 1px solid var(--ds-color-border-default);
+  margin-top: auto;
+}
+
+.footerBtn {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+}
+
+.footerBtn > * {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.todayBtn {
+  flex-shrink: 0;
+}
+
+/* Preview catálogo: la card crece con el menú (sin hueco del layout absoluto). */
+
+.previewCardFit {
+  overflow: visible;
+  min-height: auto;
+  height: auto;
+  padding-bottom: 1.25rem;
+}
+
+.previewStageFit {
+  position: relative;
+  top: auto;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  margin-top: 4rem;
+  min-height: 0;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1rem 1.25rem;
+  overflow: visible;
+}
+
+.previewWrap {
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+}

@@ -114,7 +114,7 @@ Los **charters** y las **tasks** por épica viven bajo `Features/feature-NN-<nom
 | `insumos/` | JSON, enlaces Figma, assets exportados referenciados por las tasks. |
 | `Ejecuciones/` | Informes de ejecución por ola (fecha, archivos tocados, tests, gaps). |
 
-**Referencia actual:** Feature 04 — Atoms (componentes base): `Features/feature-04-atoms/informa/Feature-04/feature_04_atoms.md`. Al cerrar implementación en `desarrollo-listo/`, sincronizar `Spec/arquitectura-visual-ui.md` y `Spec/proyect.md` §5 si cambian rutas o el mapa de carpetas.
+**Referencia actual:** Feature 04 — Atoms: `Features/feature-04-atoms/informa/Feature-04/feature_04_atoms.md`. Feature 05 — Molecules (ola 1): `Features/feature-05-molecules/informa/Feature-05/feature_05_molecules.md` (**una molécula = un archivo en `tasks/`**, misma convención Figma + MCP que átomos). Al cerrar implementación en `desarrollo-listo/`, sincronizar `Spec/arquitectura-visual-ui.md` y `Spec/proyect.md` §5 si cambian rutas o el mapa de carpetas.
 
 ---
 

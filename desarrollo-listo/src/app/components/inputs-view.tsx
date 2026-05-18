@@ -149,7 +149,7 @@ function CountryFlag({ iso2, name }: { iso2: string; name: string }) {
   );
 }
 
-function InputPreview({
+export function CatalogInput({
   inputType,
   inputState,
   showIcon,
@@ -165,6 +165,9 @@ function InputPreview({
   onPrefixChange,
   onFocus,
   onBlur,
+  inputId = "input-preview-field",
+  wrapClassName,
+  wrapVariant = "default",
 }: {
   inputType: InputType;
   inputState: InputState;
@@ -181,6 +184,10 @@ function InputPreview({
   onPrefixChange?: (code: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  /** Evita colisión de `id` cuando hay varios inputs en una molécula. */
+  inputId?: string;
+  wrapClassName?: string;
+  wrapVariant?: "default" | "number" | "menu";
 }) {
   const stateAttr = INPUT_STATE_ATTR[inputState];
   const isDisabled = inputState === "Disabled";
@@ -217,14 +224,12 @@ function InputPreview({
   }, [countryOpen]);
 
   useEffect(() => {
-    const input = document.getElementById(
-      "input-preview-field",
-    ) as HTMLInputElement | null;
+    const input = document.getElementById(inputId) as HTMLInputElement | null;
     if (!input) return;
     if (inputState === "Focused" && !isDisabled) {
       input.focus();
     }
-  }, [inputState, isDisabled]);
+  }, [inputId, inputState, isDisabled]);
 
   const helperState =
     inputState === "Error"
@@ -233,10 +238,16 @@ function InputPreview({
         ? "disabled"
         : "default";
 
+  const previewDataVariant = isNumber
+    ? "number"
+    : wrapVariant !== "default"
+      ? wrapVariant
+      : undefined;
+
   return (
     <div
-      className={styles.previewWrap}
-      data-variant={isNumber ? "number" : "default"}
+      className={`${styles.previewWrap} ${wrapClassName ?? ""}`.trim()}
+      data-variant={previewDataVariant}
     >
       {isNumber ? (
         <div
@@ -278,7 +289,7 @@ function InputPreview({
 
           <div className={styles.numberField}>
             <input
-              id="input-preview-field"
+              id={inputId}
               type="text"
               className={styles.nativeInput}
               value={valueText}
@@ -353,7 +364,7 @@ function InputPreview({
           )}
 
           <input
-            id="input-preview-field"
+            id={inputId}
             type="text"
             className={styles.nativeInput}
             value={valueText}
@@ -447,7 +458,7 @@ function buildInputSnippet(opts: {
 .ds-input {
   --ds-input-radius: 8px;
   --ds-input-padding-x: 12px;
-  --ds-input-padding-y: 14px;
+  --ds-input-padding-y: 10px;
   --ds-input-border-w: 1px;
   --ds-input-current-border: var(--ds-input-border);
   display: flex;
@@ -670,7 +681,7 @@ export function InputsView() {
               </button>
             </div>
             <div className={shell.previewStage}>
-              <InputPreview
+              <CatalogInput
                 inputType={inputType}
                 inputState={effectiveState}
                 showIcon={showIcon}

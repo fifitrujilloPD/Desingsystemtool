@@ -23,7 +23,7 @@ type ButtonSize = "sm" | "md" | "lg" | "xl";
 type ButtonColor = "Blue" | "Gray";
 type IconPosition = "none" | "left" | "right" | "both";
 
-interface ButtonAppearance {
+export interface ButtonAppearance {
   bg: string;
   text: string;
   border: string;
@@ -65,7 +65,7 @@ const BUTTON_STATE_TOKENS = [
   },
 ] as const;
 
-function resolveButtonAppearance(
+export function resolveButtonAppearance(
   mode: "light" | "dark",
   style: ButtonStyle,
   state: ButtonState,
@@ -151,7 +151,7 @@ function buttonCssVars(appearance: ButtonAppearance): React.CSSProperties {
   };
 }
 
-function ButtonPreview({
+export function CatalogButton({
   buttonStyle,
   buttonState,
   buttonColor,
@@ -466,7 +466,7 @@ export function ButtonsView() {
               </button>
             </div>
             <div className={shell.previewStage}>
-              <ButtonPreview
+              <CatalogButton
                 buttonStyle={buttonStyle}
                 buttonState={effectiveButtonState}
                 buttonColor={buttonColor}

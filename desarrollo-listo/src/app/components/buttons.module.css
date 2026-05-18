@@ -50,7 +50,8 @@
 
 .button[data-size="md"] {
   font-size: var(--ds-typography-body-sm-font-size);
-  padding: 10px 12px;
+  padding: 12px 12px;
+  height: 44px;
 }
 
 .button[data-size="lg"] {

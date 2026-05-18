@@ -3,7 +3,7 @@ import type { RouteObject } from "react-router";
 import { createBrowserRouter } from "react-router";
 import { DashboardLayout } from "./components/dashboard-layout";
 import { ColorsView } from "./components/colors-view";
-import { MoleculesView } from "./components/molecules-view";
+import { Navigate } from "react-router";
 import { OrganismsView } from "./components/organisms-view";
 import { PlaceholderView } from "./components/placeholder-view";
 import { IconsView } from "./components/icons-view";
@@ -37,6 +37,14 @@ import {
   atomRouterPath,
   type AtomCatalogRoute,
 } from "./data/atom-catalog-routes";
+import {
+  MOLECULE_CATALOG_ROUTES,
+  moleculeRouterPath,
+} from "./data/molecule-catalog-routes";
+import { MoleculePlaceholderView } from "./components/molecule-placeholder-view";
+import { DatePickerMenuView } from "./components/date-picker-menu-view";
+import { FileUploadItemBaseView } from "./components/file-upload-item-base-view";
+import type { MoleculeCatalogRoute } from "./data/molecule-catalog-routes";
 
 const ATOM_VIEW_BY_ID: Record<
   AtomCatalogRoute["id"],
@@ -82,6 +90,32 @@ function atomRouteObjects(): RouteObject[] {
   });
 }
 
+const MOLECULE_VIEW_BY_ID: Record<
+  MoleculeCatalogRoute["id"],
+  ComponentType | undefined
+> = {
+  "date-picker-menu": DatePickerMenuView,
+  "file-upload-item-base": FileUploadItemBaseView,
+  snackbar: undefined,
+  "button-toggle": undefined,
+};
+
+function moleculeRouteObjects(): RouteObject[] {
+  return MOLECULE_CATALOG_ROUTES.map((entry) => {
+    const Component =
+      entry.status === "review"
+        ? MOLECULE_VIEW_BY_ID[entry.id]
+        : MoleculePlaceholderView;
+    if (!Component) {
+      throw new Error(`Missing view for molecule route: ${entry.id}`);
+    }
+    return {
+      path: moleculeRouterPath(entry.path),
+      Component,
+    };
+  });
+}
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -95,8 +129,16 @@ export const router = createBrowserRouter([
       { path: "borders", Component: BordersView },
       { path: "shadows", Component: PlaceholderView },
       ...atomRouteObjects(),
-      { path: "molecules", Component: MoleculesView },
-      { path: "molecules/:section", Component: MoleculesView },
+      ...moleculeRouteObjects(),
+      {
+        path: "molecules",
+        Component: () => (
+          <Navigate
+            to={MOLECULE_CATALOG_ROUTES[0]?.path ?? "/molecules/date-picker-menu"}
+            replace
+          />
+        ),
+      },
       { path: "organisms", Component: OrganismsView },
       { path: "organisms/:section", Component: OrganismsView },
       { path: "*", Component: PlaceholderView },

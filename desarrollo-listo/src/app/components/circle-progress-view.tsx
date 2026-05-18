@@ -63,7 +63,7 @@ const COLOR_DEFS = [
   },
 ] as const;
 
-function circleThemeVars(mode: "light" | "dark"): React.CSSProperties {
+export function circleThemeVars(mode: "light" | "dark"): React.CSSProperties {
   return {
     ["--ds-circle-track" as string]: resolveJsonBackgroundColor(
       "bg-brand-ships",
@@ -74,7 +74,7 @@ function circleThemeVars(mode: "light" | "dark"): React.CSSProperties {
   };
 }
 
-function CircleProgressRing({
+export function CircleProgressRing({
   size,
   animate,
 }: {

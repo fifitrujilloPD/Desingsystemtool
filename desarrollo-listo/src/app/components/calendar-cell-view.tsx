@@ -101,7 +101,7 @@ const COLOR_DEFS = [
   },
 ] as const;
 
-function calendarCellThemeVars(mode: "light" | "dark"): React.CSSProperties {
+export function calendarCellThemeVars(mode: "light" | "dark"): React.CSSProperties {
   return {
     ["--ds-cal-cell-day" as string]: resolveJsonTextColor("text-primary", mode),
     ["--ds-cal-cell-day-active" as string]: resolveJsonButtonColor(
@@ -136,7 +136,7 @@ function calendarCellThemeVars(mode: "light" | "dark"): React.CSSProperties {
       "text-disabled",
       mode,
     ),
-    ["--ds-cal-cell-dot" as string]: resolveJsonButtonColor("button-hover", mode),
+    ["--ds-cal-cell-dot" as string]: resolveJsonTextColor("text-secondary", mode),
     ["--ds-color-control-ink-muted" as string]: resolveJsonTextColor(
       "text-secondary",
       mode,
@@ -150,6 +150,7 @@ export function CalendarCellPreview({
   cellState,
   rangePosition = "none",
   showDot = true,
+  cellRole = "day",
   interactive = false,
   onClick,
 }: {
@@ -158,6 +159,8 @@ export function CalendarCellPreview({
   cellState: CalendarCellState;
   rangePosition?: CalendarRangePosition;
   showDot?: boolean;
+  /** Cabeceras de semana (Lu–Do): texto secundario, sin interacción de día. */
+  cellRole?: "day" | "weekday";
   interactive?: boolean;
   onClick?: () => void;
 }) {
@@ -173,9 +176,10 @@ export function CalendarCellPreview({
       data-type={cellType}
       data-state={cellState}
       data-range={range}
+      data-role={cellRole}
       data-has-dot={showDot ? "true" : "false"}
       disabled={cellState === "disabled" && !interactive}
-      aria-label={`Day ${day}`}
+      aria-label={cellRole === "weekday" ? day : `Day ${day}`}
       aria-pressed={cellType === "selected" ? true : undefined}
       onClick={onClick}
     >

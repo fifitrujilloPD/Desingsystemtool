@@ -54,7 +54,7 @@
   height: var(--ds-cal-cell-dot-size);
   margin-top: var(--ds-cal-cell-dot-gap);
   border-radius: var(--ds-cal-cell-radius);
-  background: var(--ds-cal-cell-dot);
+  background: var(--ds-color-control-ink-muted);
   flex-shrink: 0;
   z-index: 1;
 }
@@ -111,8 +111,22 @@
 .cell[data-type="inactive"][data-state="hover"] .day,
 .cell[data-type="today"][data-state="default"] .day,
 .cell[data-type="today"][data-state="hover"] .day {
-  color: var(--ds-cal-cell-day-active);
+  color: var(--ds-color-control-ink-muted);
   font-weight: 400;
+}
+
+/* Cabeceras Lu–Do (Date picker) — Text colors.text-secondary */
+.cell[data-role="weekday"][data-type="inactive"][data-state="default"] .day,
+.cell[data-role="weekday"][data-type="inactive"][data-state="hover"] .day,
+.cell[data-role="weekday"][data-type="today"][data-state="default"] .day,
+.cell[data-role="weekday"][data-type="today"][data-state="hover"] .day {
+  color: var(--ds-color-control-ink-muted);
+  font-weight: 400;
+}
+
+.cell[data-role="weekday"][data-type="inactive"][data-state="hover"]::before,
+.cell[data-role="weekday"][data-type="today"][data-state="hover"]::before {
+  background: transparent;
 }
 
 .cell[data-type="today"][data-state="default"] .day {
